@@ -64,6 +64,10 @@ func (s *SQL) migrate() error {
 	return nil
 }
 
+func IsNotFound(err error) bool {
+	return err == sql.ErrNoRows
+}
+
 // if 2 issues or more came from any of the code below we will delete it and use plain sql queries
 // current counter: 0
 

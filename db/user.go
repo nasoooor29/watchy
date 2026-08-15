@@ -36,7 +36,3 @@ func (q *SQL) CreateUser(name, email, password string) (*User, error) {
 	}
 	return q.GetUser(uid)
 }
-
-func IsNotFound(err error) bool {
-	return err == sql.ErrNoRows
-}
