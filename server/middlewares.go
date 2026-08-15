@@ -43,6 +43,13 @@ func (mw *MiddleWares) Recovery(next http.Handler) http.Handler {
 		next.ServeHTTP(w, r)
 	})
 }
+func (mw *MiddleWares) cacheStaticFiles(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Cache-Control", "public, max-age=31536000, immutable")
+		next.ServeHTTP(w, r)
+	})
+}
+
 func (mw *MiddleWares) Auth(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		_, err := utils.GetUserByCookie(r, mw.DB)

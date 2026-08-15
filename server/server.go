@@ -18,7 +18,7 @@ func (s *Server) RegisterRoutes() http.Handler {
 	mux := http.NewServeMux()
 	mw := &MiddleWares{DB: s.DB}
 	stack := CreateStack(mw.Logging, mw.Recovery)
-	mux.Handle("GET /public/", http.StripPrefix("/public/", http.FileServer(http.Dir("web/public"))))
+	mux.Handle("GET /public/", mw.cacheStaticFiles(http.StripPrefix("/public/", http.FileServer(http.Dir("web/public")))))
 	mux.HandleFunc("GET /", func(w http.ResponseWriter, r *http.Request) {
 		// if the url path is not / then return 404
 		if r.URL.Path != "/" {
