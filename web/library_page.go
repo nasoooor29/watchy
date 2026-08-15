@@ -82,12 +82,7 @@ func DummyLibraryPage() LibraryPage {
 			Synopsis:     "Anime adaptation of part three of the Honzuki no Gekokujou light novel.",
 			Japanese:     "本好きの下剋上 ～司書になるためには手段を選んでいられません～",
 			EpisodeCount: 55,
-			Season: Season{Name: "Season 04", Episodes: []Episode{
-				{Name: "E18 - Honzuki No Gekokujou S4", Sources: dummySources()},
-				{Name: "E17 - Honzuki No Gekokujou S4", Watched: true, Sources: dummySources()},
-				{Name: "E16 - Honzuki No Gekokujou S4", Watched: true, Sources: dummySources()},
-				{Name: "E15 - Honzuki No Gekokujou S4", Watched: true, Sources: dummySources()},
-			}},
+			Season: Season{Name: "Season 04", Episodes: dummyEpisodes()},
 		},
 		Stats: []LibraryStat{{Label: "Watching", Value: "0"}, {Label: "Missing eps", Value: "0"}, {Label: "Missing seasons", Value: "0"}, {Label: "MAL eps", Value: "-"}},
 	}
