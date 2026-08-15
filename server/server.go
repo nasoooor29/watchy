@@ -18,7 +18,15 @@ func (s *Server) RegisterRoutes() http.Handler {
 	mux := http.NewServeMux()
 	mw := &MiddleWares{DB: s.DB}
 	stack := CreateStack(mw.Logging, mw.Recovery)
-	mux.HandleFunc("GET /", s.RenderPageHandler("home.html"))
+	mux.Handle("GET /public/", http.StripPrefix("/public/", http.FileServer(http.Dir("web/public"))))
+	mux.HandleFunc("GET /", func(w http.ResponseWriter, r *http.Request) {
+		// if the url path is not / then return 404
+		if r.URL.Path != "/" {
+			s.render(w, r, http.StatusNotFound, "404.html")
+			return
+		}
+		s.render(w, r, http.StatusOK, "index.html")
+	})
 
 	mux.HandleFunc("GET /login", s.RenderPageHandler("login.html"))
 	mux.HandleFunc("POST /login", s.login)
