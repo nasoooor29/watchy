@@ -12,9 +12,6 @@
           <label class="relative min-w-0 flex-1"><span class="sr-only">Search library</span><span class="pointer-events-none absolute inset-y-0 left-3 grid place-items-center text-slate-500">⌕</span><input type="search" placeholder="Search your library" class="w-full rounded-xl border border-slate-700 bg-slate-950 px-9 py-2.5 text-sm text-slate-100 placeholder:text-slate-500 outline-none transition focus:border-violet-400 focus:ring-2 focus:ring-violet-400/20" /></label>
           <select aria-label="Sort library" class="rounded-xl border border-slate-700 bg-slate-950 px-3 py-2.5 text-sm text-slate-300 outline-none focus:border-violet-400"><option>Recently updated</option><option>Alphabetical</option><option>Score</option></select>
         </div>
-        <div class="mt-4 grid grid-cols-2 gap-2">
-          {{ range .Stats }}{{ template "library-stat" . }}{{ end }}
-        </div>
       </div>
       <div class="grid flex-1 grid-cols-2 content-start gap-2">
         {{ range .Shows }}{{ template "library-card" . }}{{ end }}
