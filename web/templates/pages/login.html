@@ -1,0 +1,37 @@
+{{ define "title" }}Sign in · Hanashi{{ end }} {{ define "content" }}
+<section class="auth-shell">
+  <article id="auth-card">
+    <header>
+      <hgroup>
+        <h1>Welcome back</h1>
+        <p>Sign in to continue your conversations.</p>
+      </hgroup>
+    </header>
+    {{ if .Error }}<p role="alert">{{ .Error }}</p>{{ end }}
+    <form method="post" action="/login" hx-post="/login" hx-target="#auth-card" hx-select="#auth-card" hx-swap="outerHTML">
+      <label
+        >Email address<input
+          name="email"
+          type="email"
+          autocomplete="email"
+          value="{{ .Email }}"
+          placeholder="you@example.com"
+          required
+      /></label>
+      <label
+        >Password<input
+          name="password"
+          type="password"
+          autocomplete="current-password"
+          required
+      /></label>
+      <button type="submit">Sign in</button>
+    </form>
+    <footer>
+      <small class="muted"
+        >New to Hanashi? <a href="/register">Create an account</a>.</small
+      >
+    </footer>
+  </article>
+</section>
+{{ end }}

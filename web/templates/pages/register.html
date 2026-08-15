@@ -1,0 +1,47 @@
+{{ define "title" }}Create account · Hanashi{{ end }} {{ define "content" }}
+<section class="auth-shell">
+  <article id="auth-card">
+    <header>
+      <hgroup>
+        <h1>Create your account</h1>
+        <p>A calmer place for better conversations.</p>
+      </hgroup>
+    </header>
+    {{ if .Error }}
+    <p role="alert">{{ .Error }}</p>
+    {{ end }}
+    <form method="post" action="/register" hx-post="/register" hx-target="#auth-card" hx-select="#auth-card" hx-swap="outerHTML">
+      <label
+        >Your name<input
+          name="name"
+          autocomplete="name"
+          value="{{ .Name }}"
+          placeholder="Your name"
+          required
+      /></label>
+      <label
+        >Email address<input
+          name="email"
+          type="email"
+          autocomplete="email"
+          value="{{ .Email }}"
+          placeholder="you@example.com"
+          required
+      /></label>
+      <label
+        >Password<input
+          name="password"
+          type="password"
+          autocomplete="new-password"
+          required
+      /></label>
+      <button type="submit">Create account</button>
+    </form>
+    <footer>
+      <small class="muted"
+        >Already have an account? <a href="/login">Sign in</a>.</small
+      >
+    </footer>
+  </article>
+</section>
+{{ end }}

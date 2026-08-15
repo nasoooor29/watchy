@@ -12,14 +12,14 @@ type Templates struct {
 	pages map[string]*template.Template
 }
 
-func NewTemplates() (*Templates, error) {
+func newTemplates() *Templates {
 	t := &Templates{
 		pages: make(map[string]*template.Template),
 	}
 
 	pages, err := filepath.Glob("web/templates/pages/*.html")
 	if err != nil {
-		return nil, err
+		panic(err)
 	}
 
 	for _, page := range pages {
@@ -34,27 +34,29 @@ func NewTemplates() (*Templates, error) {
 			"web/templates/components/*.html",
 		)
 		if err != nil {
-			return nil, err
+			panic(err)
 		}
 
 		files = append(files, components...)
 
 		tmpl, err := template.ParseFiles(files...)
 		if err != nil {
-			return nil, err
+			panic(err)
 		}
 
 		t.pages[name] = tmpl
 	}
 
-	return t, nil
+	return t
 }
 
-func (t *Templates) RenderBase(
+func RenderBase(
 	w io.Writer,
 	page string,
 	data any,
 ) error {
+	// NOTE: change it in prod to create the template once and reuse it
+	t := newTemplates()
 	tmpl, exists := t.pages[page]
 	if !exists {
 		slog.Error("template not found", "page", page)
@@ -66,4 +68,20 @@ func (t *Templates) RenderBase(
 		"base",
 		data,
 	)
+}
+
+func RenderContent(
+	w io.Writer,
+	page string,
+	data any,
+) error {
+	// NOTE: change it in prod to create the template once and reuse it
+	t := newTemplates()
+	tmpl, exists := t.pages[page]
+	if !exists {
+		slog.Error("template not found", "page", page)
+		return fmt.Errorf("template not found: %s", page)
+	}
+
+	return tmpl.ExecuteTemplate(w, "content", data)
 }

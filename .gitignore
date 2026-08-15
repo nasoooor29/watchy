@@ -1,5 +1,6 @@
 logs/
 build/
+tmp/
 db.sqlite3
 .env
 

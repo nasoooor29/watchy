@@ -3,13 +3,53 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <title>{{ block "title" . }}Watchy{{ end }}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{{ block "title" . }}Hanashi{{ end }}</title>
 
-    <script src="https://unpkg.com/htmx.org"></script>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css"
+    />
+    <script src="https://unpkg.com/htmx.org@2.0.4"></script>
+    <style>
+      :root {
+        --pico-font-size: 100%;
+      }
+      body {
+        min-height: 100vh;
+      }
+      main {
+        min-height: 100vh;
+        padding-block: 3rem;
+        display: grid;
+        place-items: center;
+      }
+      .auth-shell {
+        width: min(100%, 30rem);
+        max-width: 30rem;
+        margin: 0 auto;
+      }
+      .muted {
+        color: var(--pico-muted-color);
+      }
+      .account-card {
+        width: min(100%, 44rem);
+        max-width: 44rem;
+        margin: 0 auto;
+      }
+      .inline-link {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 1rem;
+      }
+    </style>
   </head>
 
   <body>
-    <main>{{ block "content" . }}{{ end }}</main>
+    <main hx-boost="true" hx-push-url="true">
+      {{ block "content" . }}{{ end }}
+    </main>
   </body>
 </html>
 {{ end }}

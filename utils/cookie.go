@@ -5,6 +5,7 @@ import (
 	"backend/models"
 	"log/slog"
 	"net/http"
+	"time"
 )
 
 const AUTH_COOKE_NAME = "auth_token"
@@ -29,6 +30,10 @@ func GetUserByCookie(r *http.Request, q *db.SQL) (*db.User, error) {
 	if err != nil {
 		return nil, models.ErrUnauthorized
 	}
+	expiresAt, err := time.Parse(time.RFC3339, data.ExpiresAt)
+	if err != nil || !expiresAt.After(time.Now()) {
+		return nil, models.ErrUnauthorized
+	}
 
 	u, err := q.GetUser(data.Userid)
 	if err != nil {
@@ -36,4 +41,22 @@ func GetUserByCookie(r *http.Request, q *db.SQL) (*db.User, error) {
 		return nil, err
 	}
 	return u, nil
+}
+
+func GenerateCookie(w http.ResponseWriter, q *db.SQL, userId string, forever bool) error {
+	cookie, err := q.CreateCookie(userId, forever)
+	if err != nil {
+		slog.Error("", "err", err)
+		return err
+	}
+	// insert into handler
+	http.SetCookie(w, &http.Cookie{
+		Name:     AUTH_COOKE_NAME,
+		Value:    cookie.UUID,
+		Path:     "/",
+		MaxAge:   0,
+		HttpOnly: true,
+		SameSite: http.SameSiteLaxMode,
+	})
+	return nil
 }

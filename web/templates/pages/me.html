@@ -1,0 +1,29 @@
+{{ define "title" }}My account · Hanashi{{ end }} {{ define "content" }}
+<section class="account-card">
+  <article>
+    <header>
+      <hgroup>
+        <h1>Your account</h1>
+        <p>Your account details.</p>
+      </hgroup>
+    </header>
+    <table>
+      <tr>
+        <th>Name</th>
+        <td>{{ .Name }}</td>
+      </tr>
+      <tr>
+        <th>Email address</th>
+        <td>{{ .Email }}</td>
+      </tr>
+    </table>
+  </article>
+  <article>
+    <header><strong>Account</strong></header>
+    <p class="muted">You can sign out of this device at any time.</p>
+    <form method="post" action="/logout">
+      <button class="secondary outline">Sign out</button>
+    </form>
+  </article>
+</section>
+{{ end }}
