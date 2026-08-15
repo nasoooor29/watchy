@@ -59,11 +59,19 @@ func DummyLibraryPage() LibraryPage {
 		{Title: "Koko wa Ore ni Makasete Saki ni Ike", Year: 2026, Score: 6.78, Progress: "7/7 watched", Percent: 100},
 		{Title: "Hell Mode: Yarikomizuki no Gamer", Year: 2026, Score: 7.2, Progress: "30/30 watched", Percent: 100},
 		{Title: "Otome Kaijuu Carameliser", Year: 2026, Score: 7.67, Progress: "7/7 watched", Percent: 100},
+		{Title: "Sousou no Frieren", Year: 2023, Score: 9.12, Progress: "28/28 watched", Percent: 100},
+		{Title: "Kusuriya no Hitorigoto", Year: 2023, Score: 8.84, Progress: "24/24 watched", Percent: 100},
+		{Title: "Dungeon Meshi", Year: 2024, Score: 8.66, Progress: "19/24 watched", Percent: 79},
+		{Title: "Dandadan", Year: 2024, Score: 8.58, Progress: "12/12 watched", Percent: 100},
+		{Title: "Kaijuu 8-gou", Year: 2024, Score: 8.21, Progress: "9/12 watched", Percent: 75},
+		{Title: "Boku no Hero Academia", Year: 2016, Score: 7.89, Progress: "146/159 watched", Percent: 92},
+		{Title: "Shangri-La Frontier", Year: 2023, Score: 8.09, Progress: "40/50 watched", Percent: 80},
+		{Title: "Re:Zero kara Hajimeru Isekai Seikatsu", Year: 2016, Score: 8.25, Progress: "50/66 watched", Percent: 76},
 	}
 
 	return LibraryPage{
 		TotalSeries: 177,
-		Shows:       shows[:6],
+		Shows:       shows,
 		Selected: ShowDetail{
 			Title:        "Honzuki no Gekokujou Shisho ni Naru Tame ni wa Shudan wo Erandeiraremasen",
 			Alternative:  "Ascendance of a Bookworm: Adopted Daughter of an Archduke",
