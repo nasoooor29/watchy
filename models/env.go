@@ -18,6 +18,8 @@ type EnvVars struct {
 
 	LogLevel string
 	Timeout  int
+
+	TvDir string
 }
 
 func GetEnv() *EnvVars {
@@ -34,6 +36,7 @@ func GetEnv() *EnvVars {
 		MigrationsDir: EnvString("DATABASE_MIGRATION_DIR", "./db/migrations"),
 		LogLevel:      EnvString("LOG_LEVEL", "debug"),
 		Timeout:       EnvInt("TIMEOUT", 30),
+		TvDir:         EnvString("TV_DIR", "/mnt/Thicc32/tv"),
 	}
 }
 
@@ -53,30 +56,6 @@ func MustEnvInt(name string) int {
 	value, err := strconv.Atoi(env)
 	if err != nil {
 		panic("invalid integer value for environment variable: " + name)
-	}
-	return value
-}
-
-func MustEnvBool(name string) bool {
-	env := os.Getenv(name)
-	if env == "" {
-		panic("environment variable not set: " + name)
-	}
-	value, err := strconv.ParseBool(env)
-	if err != nil {
-		panic("invalid boolean value for environment variable: " + name)
-	}
-	return value
-}
-
-func EnvBool(name string, defaultValue bool) bool {
-	env := os.Getenv(name)
-	if env == "" {
-		return defaultValue
-	}
-	value, err := strconv.ParseBool(env)
-	if err != nil {
-		return defaultValue
 	}
 	return value
 }
