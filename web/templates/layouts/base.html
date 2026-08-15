@@ -47,7 +47,7 @@
   </head>
 
   <body>
-    <main hx-boost="true" hx-push-url="true">
+    <main hx-boost="true" hx-push-url="true" hx-target="main" hx-swap="innerHTML">
       {{ block "content" . }}{{ end }}
     </main>
   </body>
