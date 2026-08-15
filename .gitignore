@@ -1,0 +1,6 @@
+logs/
+build/
+db.sqlite3
+.env
+
+.gocache

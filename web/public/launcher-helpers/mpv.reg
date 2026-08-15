@@ -1,0 +1,8 @@
+Windows Registry Editor Version 5.00
+
+[HKEY_CURRENT_USER\Software\Classes\mpv]
+@="URL:MPV Protocol"
+"URL Protocol"=""
+
+[HKEY_CURRENT_USER\Software\Classes\mpv\shell\open\command]
+@="\"C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe\" -NoProfile -WindowStyle Hidden -Command \"& { param([string]$url) $media = [uri]::UnescapeDataString(($url -replace '^mpv:(//)?', '')); & mpv.exe -- $media }\" \"%1\""

@@ -1,0 +1,15 @@
+{{ define "base" }}
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>{{ block "title" . }}Watchy{{ end }}</title>
+
+    <script src="https://unpkg.com/htmx.org"></script>
+  </head>
+
+  <body>
+    <main>{{ block "content" . }}{{ end }}</main>
+  </body>
+</html>
+{{ end }}

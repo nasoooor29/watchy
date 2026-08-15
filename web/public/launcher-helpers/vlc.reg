@@ -1,0 +1,8 @@
+Windows Registry Editor Version 5.00
+
+[HKEY_CURRENT_USER\Software\Classes\vlc]
+@="URL:VLC Protocol"
+"URL Protocol"=""
+
+[HKEY_CURRENT_USER\Software\Classes\vlc\shell\open\command]
+@="\"C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe\" -NoProfile -WindowStyle Hidden -Command \"& { param([string]$url) $media = [uri]::UnescapeDataString(($url -replace '^vlc:(//)?', '')); & 'C:\\Program Files\\VideoLAN\\VLC\\vlc.exe' -- $media }\" \"%1\""
