@@ -13,7 +13,7 @@
           <select aria-label="Sort library" class="rounded-xl border border-slate-700 bg-slate-950 px-3 py-2.5 text-sm text-slate-300 outline-none focus:border-violet-400"><option>Recently updated</option><option>Alphabetical</option><option>Score</option></select>
         </div>
       </div>
-      <div class="grid flex-1 grid-cols-2 content-start gap-2">
+      <div class="grid flex-1 grid-cols-2 content-start gap-2 overflow-y-auto pr-1">
         {{ range .Shows }}{{ template "library-card" . }}{{ end }}
       </div>
 
