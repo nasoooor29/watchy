@@ -91,9 +91,21 @@ func (s *Server) mePage(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) logout(w http.ResponseWriter, r *http.Request) {
-	if cookie := utils.GetCookie(r, utils.AUTH_COOKE_NAME); cookie != nil {
-		_ = s.DB.DeleteCookie(cookie.Value)
+	cookie := utils.GetCookie(r, utils.AUTH_COOKE_NAME)
+	err := s.DB.DeleteCookie(cookie.Value)
+	if err != nil {
+		slog.Error("", "err", err)
+		http.Error(w, http.StatusText(500), 500)
+		return
 	}
-	http.SetCookie(w, &http.Cookie{Name: utils.AUTH_COOKE_NAME, Value: "", Path: "/", MaxAge: -1, HttpOnly: true, SameSite: http.SameSiteLaxMode})
+	http.SetCookie(w, &http.Cookie{
+		Name:     utils.AUTH_COOKE_NAME,
+		Value:    "",
+		Path:     "/",
+		MaxAge:   -1,
+		HttpOnly: true,
+		SameSite: http.SameSiteLaxMode,
+	})
+
 	http.Redirect(w, r, "/login", http.StatusSeeOther)
 }
