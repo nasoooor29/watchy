@@ -11,18 +11,16 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-func (s *Server) loginPage(w http.ResponseWriter, r *http.Request) {
-	s.render(w, r, "login.html", pageData{}, http.StatusOK)
-}
-func (s *Server) registerPage(w http.ResponseWriter, r *http.Request) {
-	s.render(w, r, "register.html", pageData{}, http.StatusOK)
-}
+type authPageData struct{ Name, Email, Error string }
 
 func (s *Server) login(w http.ResponseWriter, r *http.Request) {
 	email, password := strings.ToLower(strings.TrimSpace(r.FormValue("email"))), r.FormValue("password")
 	user, err := s.DB.GetUserByEmail(email)
 	if err != nil || bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password)) != nil {
-		s.render(w, r, "login.html", pageData{Email: email, Error: "Email or password is incorrect."}, http.StatusUnauthorized)
+		s.render(w, r, http.StatusUnauthorized, "login.html", authPageData{
+			Email: email,
+			Error: "Email or password is incorrect.",
+		})
 		return
 	}
 	remmberMe := r.FormValue("remember") != ""
@@ -47,17 +45,17 @@ func (s *Server) register(w http.ResponseWriter, r *http.Request) {
 		Email:    strings.ToLower(strings.TrimSpace(r.FormValue("email"))),
 		Password: r.FormValue("password"),
 	}
-	data := pageData{Name: input.Name, Email: input.Email}
+	data := authPageData{Name: input.Name, Email: input.Email}
 	if err := validate.Struct(input); err != nil {
 		fmt.Printf("err: %v\n", err)
 		data.Error = "Enter a name, a valid email address, and a password of at least 8 characters."
-		s.render(w, r, "register.html", data, http.StatusBadRequest)
+		s.render(w, r, http.StatusBadRequest, "register.html", data)
 		return
 	}
 	_, err := s.DB.GetUserByEmail(input.Email)
 	if err == nil {
 		data.Error = "An account with that email already exists."
-		s.render(w, r, "register.html", data, http.StatusConflict)
+		s.render(w, r, http.StatusConflict, "register.html", data)
 		return
 	}
 	if !db.IsNotFound(err) {
@@ -87,7 +85,7 @@ func (s *Server) register(w http.ResponseWriter, r *http.Request) {
 
 func (s *Server) mePage(w http.ResponseWriter, r *http.Request) {
 	user, _ := utils.GetUserByCookie(r, s.DB)
-	s.render(w, r, "me.html", pageData{Name: user.Name, Email: user.Email}, http.StatusOK)
+	s.render(w, r, http.StatusOK, "me.html", authPageData{Name: user.Name, Email: user.Email})
 }
 
 func (s *Server) logout(w http.ResponseWriter, r *http.Request) {
