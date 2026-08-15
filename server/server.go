@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"log/slog"
 	"net/http"
+	"time"
 
 	"github.com/go-playground/validator/v10"
 )
@@ -53,7 +54,25 @@ func StartServer() {
 		Addr:    fmt.Sprintf("%v:%v", env.Host, env.Port),
 		Handler: server.RegisterRoutes(),
 	}
+
 	slog.Info("server started", "host", env.Host, "port", env.Port)
+
+	cleanUpTicker := time.NewTicker(30 * time.Minute)
+	defer cleanUpTicker.Stop()
+
+	go func() {
+		for {
+			select {
+			case <-cleanUpTicker.C:
+				err := db.DeleteExpiredCookies()
+				if err != nil {
+					slog.Error("failed to delete expired cookies", "err", err)
+				} else {
+					slog.Info("expired cookies deleted")
+				}
+			}
+		}
+	}()
 
 	httpServer.ListenAndServe()
 }

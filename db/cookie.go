@@ -8,6 +8,7 @@ import (
 )
 
 const SESSION_DURATION = 7 * 24 * time.Hour
+const FOREVER_DURATION = 30 * 24 * time.Hour
 
 type Cookie struct {
 	UUID      string `db:"uuid"`
@@ -27,7 +28,7 @@ func (q *SQL) ReadCookieByUUID(uuid string) (*Cookie, error) {
 func (q *SQL) CreateCookie(userId string, forever bool) (*Cookie, error) {
 	var duration time.Duration
 	if forever {
-		duration = 30 * 24 * time.Hour
+		duration = FOREVER_DURATION
 	} else {
 		duration = SESSION_DURATION
 	}
@@ -49,7 +50,7 @@ func (q *SQL) DeleteCookie(uuid string) error {
 	return err
 }
 
-func (q *SQL) DeleteExpiredCookies(now time.Time) error {
-	_, err := q.db.Exec("DELETE FROM cookies WHERE expires_at <= ?", now.UTC().Format(time.RFC3339))
+func (q *SQL) DeleteExpiredCookies() error {
+	_, err := q.db.Exec("DELETE FROM cookies WHERE expires_at <= ?", time.Now().UTC().Format(time.RFC3339))
 	return err
 }
