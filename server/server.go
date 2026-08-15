@@ -25,7 +25,7 @@ func (s *Server) RegisterRoutes() http.Handler {
 			s.render(w, r, http.StatusNotFound, "404.html")
 			return
 		}
-		s.render(w, r, http.StatusOK, "index.html")
+		s.render(w, r, http.StatusOK, "home.html", web.DummyLibraryPage())
 	})
 
 	mux.HandleFunc("GET /login", s.RenderPageHandler("login.html"))
@@ -101,7 +101,11 @@ func (s *Server) render(w http.ResponseWriter, r *http.Request, status int, page
 		return
 	}
 	w.WriteHeader(status)
-	if err := web.RenderBase(w, page, data); err != nil {
+	var pageData any
+	if len(data) > 0 {
+		pageData = data[0]
+	}
+	if err := web.RenderBase(w, page, pageData); err != nil {
 		slog.Error("rendering page failed", "page", page, "err", err)
 	}
 }
