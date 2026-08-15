@@ -1,3 +1,37 @@
+{{ define "title" }}Library · Hanashi{{ end }}
+
 {{ define "content" }}
-<h1>Anime Page</h1>
+<div class="-m-4 flex h-screen min-h-0 flex-col gap-4 overflow-hidden bg-slate-950 p-4 sm:-m-8 sm:p-4 xl:flex-row">
+  <aside class="flex min-h-0 min-w-0 flex-col gap-4 xl:w-2/5">
+      <div class="rounded-2xl border border-slate-800 bg-slate-900/60 p-4">
+        <div class="mb-4 flex items-start justify-between gap-4">
+          <div><div class="flex items-center gap-2 text-sm font-semibold text-violet-300"><span class="grid h-7 w-7 place-items-center rounded-lg bg-violet-500 text-white">H</span> Hanashi</div><h1 class="mt-3 text-2xl font-bold tracking-tight text-white">Your library</h1><p class="mt-1 text-sm text-slate-400">{{ .TotalSeries }} series, all in one place.</p></div>
+          <button type="button" aria-label="Refresh library" class="shrink-0 rounded-xl border border-slate-700 bg-slate-900 px-3 py-2 text-sm font-semibold text-slate-200 transition hover:border-violet-400 hover:text-white">↻</button>
+        </div>
+        <div class="flex gap-2">
+          <label class="relative min-w-0 flex-1"><span class="sr-only">Search library</span><span class="pointer-events-none absolute inset-y-0 left-3 grid place-items-center text-slate-500">⌕</span><input type="search" placeholder="Search your library" class="w-full rounded-xl border border-slate-700 bg-slate-950 px-9 py-2.5 text-sm text-slate-100 placeholder:text-slate-500 outline-none transition focus:border-violet-400 focus:ring-2 focus:ring-violet-400/20" /></label>
+          <select aria-label="Sort library" class="rounded-xl border border-slate-700 bg-slate-950 px-3 py-2.5 text-sm text-slate-300 outline-none focus:border-violet-400"><option>Recently updated</option><option>Alphabetical</option><option>Score</option></select>
+        </div>
+        <div class="mt-4 grid grid-cols-2 gap-2">
+          {{ range .Stats }}{{ template "library-stat" . }}{{ end }}
+        </div>
+      </div>
+      <div class="grid flex-1 grid-cols-2 content-start gap-2">
+        {{ range .Shows }}{{ template "library-card" . }}{{ end }}
+      </div>
+
+  </aside>
+  <div class="flex min-h-0 min-w-0 flex-1 flex-col gap-4 overflow-y-auto pr-1 xl:w-3/5">
+    <div class="shrink-0">
+      {{ template "show-detail" .Selected }}
+    </div>
+    <section class="min-h-0 shrink-0 rounded-2xl border border-slate-800 bg-slate-900/70 p-4 sm:p-5">
+        <div class="flex items-center justify-between gap-4"><div><h2 class="text-lg font-semibold text-white">Seasons & episodes</h2><p class="mt-1 text-sm text-slate-400">Pick an available release to start watching.</p></div><span class="rounded-full bg-slate-800 px-2.5 py-1 text-xs font-medium text-slate-300">{{ .Selected.EpisodeCount }} episodes</span></div>
+        <details open class="mt-4 group">
+          <summary class="flex cursor-pointer list-none items-center justify-between rounded-xl border border-slate-800 bg-slate-950/40 px-4 py-3 text-sm font-semibold text-slate-200 marker:content-none"><span>{{ .Selected.Season.Name }}</span><span class="text-slate-500 transition group-open:rotate-180">⌄</span></summary>
+          <div class="mt-3 max-h-72 space-y-2 overflow-y-auto pr-1">{{ range .Selected.Season.Episodes }}{{ template "episode-row" . }}{{ end }}</div>
+        </details>
+      </section>
+  </div>
+</div>
 {{ end }}
