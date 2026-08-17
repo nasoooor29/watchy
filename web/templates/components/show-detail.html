@@ -4,15 +4,6 @@
     .show-detail {
       overflow: hidden;
     }
-    .show-detail-hero {
-      padding: 0.5rem;
-      background: linear-gradient(
-        90deg,
-        rgb(124 58 237 / 0.16),
-        transparent,
-        rgb(192 38 211 / 0.16)
-      );
-    }
     .show-detail-top {
       display: flex;
       align-items: flex-start;
@@ -39,7 +30,7 @@
     }
     .show-detail-eyebrow {
       margin: 0;
-      color: var(--sl-color-primary-400);
+      color: var(--ctp-mauve);
       font-size: 0.75rem;
       font-weight: 700;
       letter-spacing: 0.12em;
@@ -47,7 +38,7 @@
     }
     .show-detail-title {
       margin: 0.35rem 0 0;
-      color: white;
+      color: var(--ctp-text);
       font-size: 1.75rem;
     }
     .show-detail-tags,
@@ -70,7 +61,7 @@
     }
     .show-detail-body h2 {
       margin: 0;
-      color: white;
+      color: var(--ctp-text);
       font-size: 1.125rem;
     }
     .show-detail-synopsis {
@@ -93,34 +84,32 @@
       }
     }
   </style>
-  <div class="show-detail-hero">
-    <div class="show-detail-top">
-      <div class="show-detail-cover">
-        <img
-          src="http://localhost:3000/api/series-cover?name=Honzuki%20no%20Gekokujou%20Shisho%20ni%20Naru%20Tame%20ni%20wa%20Shudan%20wo%20Erandeiraremasen"
-          alt="{{ .Title }} cover"
-        />
+  <div class="show-detail-top">
+    <div class="show-detail-cover">
+      <img
+        src="http://localhost:3000/api/series-cover?name=Honzuki%20no%20Gekokujou%20Shisho%20ni%20Naru%20Tame%20ni%20wa%20Shudan%20wo%20Erandeiraremasen"
+        alt="{{ .Title }} cover"
+      />
+    </div>
+    <div class="show-detail-copy">
+      <p class="show-detail-eyebrow">Now watching</p>
+      <h1 class="show-detail-title">{{ .Title }}</h1>
+      <p class="subtle">{{ .Alternative }}</p>
+      <div class="show-detail-tags">
+        {{ range .Tags }}
+        <sl-tag size="small">{{ . }}</sl-tag>
+        {{ end }}
       </div>
-      <div class="show-detail-copy">
-        <p class="show-detail-eyebrow">Now watching</p>
-        <h1 class="show-detail-title">{{ .Title }}</h1>
-        <p class="subtle">{{ .Alternative }}</p>
-        <div class="show-detail-tags">
-          {{ range .Tags }}
-          <sl-tag size="small">{{ . }}</sl-tag>
-          {{ end }}
-        </div>
-        <div class="show-detail-body">
-          <h2>Synopsis</h2>
-          <p class="show-detail-synopsis">{{ .Synopsis }}</p>
-        </div>
-        <div class="show-detail-actions">
-          <sl-button variant="primary">Continue watching</sl-button>
-          <sl-button>
-            <sl-icon name="star" slot="prefix"></sl-icon>
-            Add to favourites
-          </sl-button>
-        </div>
+      <div class="show-detail-body">
+        <h2>Synopsis</h2>
+        <p class="show-detail-synopsis">{{ .Synopsis }}</p>
+      </div>
+      <div class="show-detail-actions">
+        <sl-button variant="primary">Continue watching</sl-button>
+        <sl-button>
+          <sl-icon name="star" slot="prefix"></sl-icon>
+          Add to favourites
+        </sl-button>
       </div>
     </div>
   </div>
