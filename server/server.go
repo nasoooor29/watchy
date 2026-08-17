@@ -46,7 +46,6 @@ type Server struct {
 }
 
 func StartServer() {
-	env := models.GetEnv()
 	// create db
 	db, err := db.GetDB()
 	if err != nil {
@@ -61,11 +60,11 @@ func StartServer() {
 	// create mux
 	// start the server
 	httpServer := &http.Server{
-		Addr:    fmt.Sprintf("%v:%v", env.Host, env.Port),
+		Addr:    fmt.Sprintf("%v:%v", models.ENV.Host, models.ENV.Port),
 		Handler: server.RegisterRoutes(),
 	}
 
-	slog.Info("server started", "host", env.Host, "port", env.Port)
+	slog.Info("server started", "host", models.ENV.Host, "port", models.ENV.Port)
 
 	cleanUpTicker := time.NewTicker(30 * time.Minute)
 	defer cleanUpTicker.Stop()

@@ -17,8 +17,7 @@ type SQL struct {
 }
 
 func GetDB() (*SQL, error) {
-	env := models.GetEnv()
-	rawDB, err := sql.Open("sqlite", env.DatabaseURL)
+	rawDB, err := sql.Open("sqlite", models.ENV.DatabaseURL)
 	if err != nil {
 		return nil, err
 	}
@@ -38,19 +37,18 @@ func (s *SQL) Close() error {
 }
 
 func (s *SQL) migrate() error {
-	env := models.GetEnv()
 	// here we will loop over this dir and load all the migrations and execute them in order
-	files, err := os.ReadDir(env.MigrationsDir)
+	files, err := os.ReadDir(models.ENV.MigrationsDir)
 	if err != nil {
 		return err
 	}
-	slog.Info("migrating database", "dir", env.MigrationsDir, "count", len(files))
+	slog.Info("migrating database", "dir", models.ENV.MigrationsDir, "count", len(files))
 	for _, file := range files {
 		if file.IsDir() {
 			continue
 		}
 		// read the file
-		content, err := os.ReadFile(filepath.Join(env.MigrationsDir, file.Name()))
+		content, err := os.ReadFile(filepath.Join(models.ENV.MigrationsDir, file.Name()))
 		if err != nil {
 			return err
 		}

@@ -22,13 +22,15 @@ type EnvVars struct {
 	TvDir string
 }
 
+var ENV *EnvVars
+
 func GetEnv() *EnvVars {
 	err := LoadEnvFile(".env")
 	if err != nil {
 		slog.Error("", "err", err)
 		panic(err)
 	}
-	return &EnvVars{
+	ENV = &EnvVars{
 		Port:          EnvInt("PORT", 8080),
 		Host:          EnvString("HOST", "0.0.0.0"),
 		JwtSecret:     EnvString("JWT_SECRET", "your-secret-key"),
@@ -38,6 +40,7 @@ func GetEnv() *EnvVars {
 		Timeout:       EnvInt("TIMEOUT", 30),
 		TvDir:         EnvString("TV_DIR", "/mnt/Thicc32/tv"),
 	}
+	return ENV
 }
 
 func MustEnvString(name string) string {
