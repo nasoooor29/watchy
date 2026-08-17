@@ -1,4 +1,26 @@
-:root { --sl-color-primary-400: #a78bfa; --sl-color-primary-500: #8b5cf6; --sl-color-primary-600: #7c3aed; }
-* { box-sizing: border-box; }
-body { min-height: 100vh; margin: 0; background: #020617; color: #e2e8f0; font-family: var(--sl-font-sans); }
-main { min-height: 100vh; padding: 1rem; }
+:root {
+  --sl-color-primary-400: #a78bfa;
+  --sl-color-primary-500: #8b5cf6;
+  --sl-color-primary-600: #7c3aed;
+}
+* {
+  box-sizing: border-box;
+}
+/* Keep scrollable regions usable without the persistent scrollbar chrome. */
+* {
+  scrollbar-width: none;
+}
+*::-webkit-scrollbar {
+  display: none;
+}
+body {
+  min-height: 100vh;
+  margin: 0;
+  background: #020617;
+  color: #e2e8f0;
+  font-family: var(--sl-font-sans);
+}
+main {
+  min-height: 100vh;
+  padding: 1rem;
+}

@@ -5,7 +5,7 @@
       overflow: hidden;
     }
     .show-detail-hero {
-      padding: 1.25rem;
+      padding: 1.5rem;
       background: linear-gradient(
         90deg,
         rgb(124 58 237 / 0.16),
@@ -16,14 +16,15 @@
     .show-detail-top {
       display: flex;
       align-items: flex-start;
-      gap: 0.75rem;
+      gap: 1.5rem;
     }
     .show-detail-cover {
-      flex: 0 0 7rem;
-      width: 7rem;
-      height: 10rem;
+      flex: 0 0 12rem;
+      width: 12rem;
+      height: 17rem;
       overflow: hidden;
       border-radius: var(--sl-border-radius-medium);
+      box-shadow: 0 0.75rem 2rem rgb(0 0 0 / 0.3);
     }
     .show-detail-cover img {
       width: 100%;
@@ -33,6 +34,8 @@
     .show-detail-copy {
       min-width: 0;
       flex: 1;
+      display: flex;
+      flex-direction: column;
     }
     .show-detail-eyebrow {
       margin: 0;
@@ -45,7 +48,7 @@
     .show-detail-title {
       margin: 0.35rem 0 0;
       color: white;
-      font-size: 1.5rem;
+      font-size: 1.75rem;
     }
     .show-detail-tags,
     .show-detail-actions {
@@ -59,10 +62,11 @@
     }
     .show-detail-actions {
       flex-wrap: wrap;
-      margin-top: 1rem;
+      margin-top: auto;
+      padding-top: 1rem;
     }
     .show-detail-body {
-      padding: 1.25rem;
+      margin-top: 1rem;
     }
     .show-detail-body h2 {
       margin: 0;
@@ -80,9 +84,11 @@
       }
       .show-detail-cover {
         align-self: center;
+        flex-basis: 10rem;
+        width: 10rem;
+        height: 14rem;
       }
-      .show-detail-hero,
-      .show-detail-body {
+      .show-detail-hero {
         padding: 1rem;
       }
     }
@@ -104,6 +110,10 @@
           <sl-tag size="small">{{ . }}</sl-tag>
           {{ end }}
         </div>
+        <div class="show-detail-body">
+          <h2>Synopsis</h2>
+          <p class="show-detail-synopsis">{{ .Synopsis }}</p>
+        </div>
         <div class="show-detail-actions">
           <sl-button variant="primary">Continue watching</sl-button>
           <sl-button>
@@ -113,10 +123,6 @@
         </div>
       </div>
     </div>
-  </div>
-  <div class="show-detail-body">
-    <h2>Synopsis</h2>
-    <p class="show-detail-synopsis">{{ .Synopsis }}</p>
   </div>
 </sl-card>
 {{ end }}
