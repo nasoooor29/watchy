@@ -1,7 +1,56 @@
 :root {
-  --sl-color-primary-400: #a78bfa;
-  --sl-color-primary-500: #8b5cf6;
-  --sl-color-primary-600: #7c3aed;
+  /* Catppuccin Mocha */
+  --ctp-rosewater: #f5e0dc;
+  --ctp-pink: #f5c2e7;
+  --ctp-mauve: #cba6f7;
+  --ctp-red: #f38ba8;
+  --ctp-peach: #fab387;
+  --ctp-yellow: #f9e2af;
+  --ctp-green: #a6e3a1;
+  --ctp-teal: #94e2d5;
+  --ctp-blue: #89b4fa;
+  --ctp-lavender: #b4befe;
+  --ctp-text: #cdd6f4;
+  --ctp-subtext: #a6adc8;
+  --ctp-overlay: #6c7086;
+  --ctp-surface-0: #313244;
+  --ctp-surface-1: #45475a;
+  --ctp-surface-2: #585b70;
+  --ctp-base: #1e1e2e;
+  --ctp-mantle: #181825;
+  --ctp-crust: #11111b;
+
+  --sl-color-primary-50: #f3effe;
+  --sl-color-primary-100: #e7dffc;
+  --sl-color-primary-200: #dccdff;
+  --sl-color-primary-300: #d1baf9;
+  --sl-color-primary-400: #cba6f7;
+  --sl-color-primary-500: #bfa0ec;
+  --sl-color-primary-600: #a883d7;
+  --sl-color-primary-700: #8e6ab7;
+  --sl-color-success-50: #e7f8e5;
+  --sl-color-success-100: #d2f0ce;
+  --sl-color-success-500: #a6e3a1;
+  --sl-color-success-600: #7dbf7b;
+  --sl-color-warning-50: #fff9e8;
+  --sl-color-warning-100: #fff0c9;
+  --sl-color-warning-500: #f9e2af;
+  --sl-color-warning-600: #d8bd80;
+  --sl-color-danger-50: #ffe8ee;
+  --sl-color-danger-100: #ffd3de;
+  --sl-color-danger-500: #f38ba8;
+  --sl-color-danger-600: #d46886;
+  --sl-color-neutral-0: #11111b;
+  --sl-color-neutral-50: #181825;
+  --sl-color-neutral-100: #1e1e2e;
+  --sl-color-neutral-200: #313244;
+  --sl-color-neutral-300: #45475a;
+  --sl-color-neutral-400: #a6adc8;
+  --sl-color-neutral-500: #bac2de;
+  --sl-color-neutral-600: #cdd6f4;
+  --sl-color-neutral-700: #d9e0f7;
+  --sl-color-neutral-800: #e6e9f5;
+  --sl-color-neutral-900: #f5e0dc;
   --padding: 0.5rem;
 }
 * {
@@ -17,11 +66,164 @@
 body {
   min-height: 100vh;
   margin: 0;
-  background: #020617;
-  color: #e2e8f0;
+  background: var(--ctp-base);
+  color: var(--ctp-text);
   font-family: var(--sl-font-sans);
 }
 main {
   min-height: 100vh;
   padding: 1rem;
+}
+
+sl-card::part(base) {
+  border-color: var(--ctp-surface-1);
+  background: var(--ctp-mantle);
+  color: var(--ctp-text);
+  box-shadow: 0 0.5rem 1.5rem rgb(17 17 27 / 0.22);
+}
+sl-input::part(base),
+sl-select::part(combobox) {
+  border-color: var(--ctp-surface-2);
+  background: var(--ctp-surface-0);
+  color: var(--ctp-text);
+}
+sl-input::part(base):focus-within,
+sl-select::part(combobox):focus-within {
+  border-color: var(--ctp-mauve);
+  box-shadow: 0 0 0 3px rgb(203 166 247 / 0.2);
+}
+sl-input::part(input),
+sl-select::part(display-input),
+sl-option::part(base) {
+  color: var(--ctp-text);
+}
+sl-select::part(listbox) {
+  border-color: var(--ctp-surface-1);
+  background: var(--ctp-mantle);
+}
+sl-option::part(base):hover,
+sl-option[aria-selected="true"]::part(base) {
+  background: var(--ctp-surface-1);
+}
+sl-tag::part(base) {
+  border-color: var(--ctp-surface-2);
+  background: var(--ctp-surface-0);
+  color: var(--ctp-lavender);
+}
+sl-details::part(base) {
+  border-color: var(--ctp-surface-1);
+}
+sl-details::part(summary) {
+  color: var(--ctp-text);
+}
+/* Shoelace buttons use their own variant tokens, so set their visible parts directly. */
+sl-button::part(base) {
+  border-color: var(--ctp-surface-2);
+  background: var(--ctp-surface-0);
+  color: var(--ctp-text);
+}
+sl-button::part(base):hover {
+  border-color: var(--ctp-overlay);
+  background: var(--ctp-surface-1);
+  color: var(--ctp-lavender);
+}
+sl-button::part(base):focus-visible,
+sl-icon-button::part(base):focus-visible {
+  outline: 2px solid var(--ctp-mauve);
+  outline-offset: 2px;
+}
+sl-button[variant="primary"]::part(base) {
+  border-color: var(--ctp-mauve);
+  background: var(--ctp-mauve);
+  color: var(--ctp-crust);
+}
+sl-button[variant="primary"]::part(base):hover {
+  border-color: var(--ctp-lavender);
+  background: var(--ctp-lavender);
+  color: var(--ctp-crust);
+}
+sl-button[variant="success"]::part(base) {
+  border-color: var(--ctp-green);
+  background: var(--ctp-green);
+  color: var(--ctp-crust);
+}
+sl-button[variant="success"]::part(base):hover {
+  border-color: var(--ctp-teal);
+  background: var(--ctp-teal);
+  color: var(--ctp-crust);
+}
+sl-button[disabled]::part(base) {
+  border-color: var(--ctp-surface-1);
+  background: var(--ctp-surface-0);
+  color: var(--ctp-overlay);
+}
+sl-icon-button::part(base) {
+  color: var(--ctp-subtext);
+}
+sl-icon-button::part(base):hover {
+  background: var(--ctp-surface-0);
+  color: var(--ctp-lavender);
+}
+a {
+  color: var(--ctp-mauve);
+}
+
+.auth-shell {
+  display: grid;
+  min-height: calc(100vh - 2rem);
+  place-items: center;
+}
+.auth-card {
+  width: min(100%, 26rem);
+}
+.auth-card::part(body) {
+  display: grid;
+  gap: 1rem;
+  padding: 1.5rem;
+}
+.auth-card h1,
+.account-card h1,
+.account-card h2 {
+  margin: 0;
+  color: var(--ctp-text);
+}
+.auth-card form {
+  display: grid;
+  gap: 1rem;
+}
+.auth-card footer {
+  font-size: 0.875rem;
+}
+.account-card {
+  display: grid;
+  max-width: 42rem;
+  gap: 1rem;
+  margin: 0 auto;
+}
+.account-card sl-card::part(body) {
+  display: grid;
+  gap: 0.75rem;
+}
+table {
+  border-collapse: collapse;
+}
+th,
+td {
+  padding: 0.5rem;
+  border-bottom: 1px solid var(--ctp-surface-1);
+  text-align: left;
+}
+
+sl-badge[variant="primary"]::part(base) {
+  background: var(--ctp-mauve);
+  color: var(--ctp-base);
+}
+
+sl-badge[variant="success"]::part(base) {
+  background: var(--ctp-green);
+  color: var(--ctp-base);
+}
+sl-badge[variant="warning"]::part(base) {
+  background: var(--ctp-yellow);
+  color: var(--ctp-base);
 }
