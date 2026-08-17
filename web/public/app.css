@@ -2,6 +2,7 @@
   --sl-color-primary-400: #a78bfa;
   --sl-color-primary-500: #8b5cf6;
   --sl-color-primary-600: #7c3aed;
+  --padding: 0.5rem;
 }
 * {
   box-sizing: border-box;
