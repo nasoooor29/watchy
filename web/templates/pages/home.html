@@ -68,7 +68,6 @@
   .episode-list {
     display: grid;
     gap: 0.5rem;
-    margin-top: 0.75rem;
   }
   @media (min-width: 1100px) {
     .library-layout {
@@ -99,7 +98,11 @@
   <div class="library-layout">
     <aside class="library-sidebar">
       <div class="toolbar">
-        <sl-input type="search" placeholder="Search your library" aria-label="Search library">
+        <sl-input
+          type="search"
+          placeholder="Search your library"
+          aria-label="Search library"
+        >
           <sl-icon name="search" slot="prefix"></sl-icon>
         </sl-input>
 
@@ -109,10 +112,15 @@
           <sl-option value="score">Score</sl-option>
         </sl-select>
 
-        <sl-icon-button name="arrow-clockwise" label="Refresh library"></sl-icon-button>
+        <sl-icon-button
+          name="arrow-clockwise"
+          label="Refresh library"
+        ></sl-icon-button>
       </div>
 
-      <div class="library-grid">{{ range .Shows }} {{ template "library-card" . }} {{ end }}</div>
+      <div class="library-grid">
+        {{ range .Shows }} {{ template "library-card" . }} {{ end }}
+      </div>
     </aside>
 
     <div class="library-content">
@@ -125,11 +133,14 @@
             <p class="subtle">Pick an available release to start watching.</p>
           </div>
 
-          <sl-badge pill>{{ .Selected.EpisodeCount }} episodes</sl-badge>
+          <sl-badge>{{ .Selected.EpisodeCount }} episodes</sl-badge>
         </div>
 
         <sl-details open summary="{{ .Selected.Season.Name }}">
-          <div class="episode-list">{{ range .Selected.Season.Episodes }} {{ template "episode-row" . }} {{ end }}</div>
+          <div class="episode-list">
+            {{ range .Selected.Season.Episodes }} {{ template "episode-row" . }}
+            {{ end }}
+          </div>
         </sl-details>
       </sl-card>
     </div>

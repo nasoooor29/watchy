@@ -6,7 +6,12 @@
     }
     .show-detail-hero {
       padding: 1.25rem;
-      background: linear-gradient(90deg, rgb(124 58 237 / 0.16), transparent, rgb(192 38 211 / 0.16));
+      background: linear-gradient(
+        90deg,
+        rgb(124 58 237 / 0.16),
+        transparent,
+        rgb(192 38 211 / 0.16)
+      );
     }
     .show-detail-top {
       display: flex;
@@ -43,8 +48,7 @@
       font-size: 1.5rem;
     }
     .show-detail-tags,
-    .show-detail-actions,
-    .show-detail-meta {
+    .show-detail-actions {
       display: flex;
       gap: 0.75rem;
     }
@@ -69,20 +73,6 @@
       margin: 0.4rem 0 0;
       color: var(--sl-color-neutral-400);
       line-height: 1.5;
-    }
-    .show-detail-meta {
-      margin: 1rem 0 0;
-      padding-top: 1rem;
-      border-top: 1px solid var(--sl-color-neutral-700);
-    }
-    .show-detail-meta div {
-      flex: 1;
-    }
-    .show-detail-meta dt {
-      color: var(--sl-color-neutral-500);
-    }
-    .show-detail-meta dd {
-      margin: 0.25rem 0 0;
     }
     @media (max-width: 540px) {
       .show-detail-top {
@@ -127,16 +117,6 @@
   <div class="show-detail-body">
     <h2>Synopsis</h2>
     <p class="show-detail-synopsis">{{ .Synopsis }}</p>
-    <dl class="show-detail-meta">
-      <div>
-        <dt>Japanese</dt>
-        <dd>{{ .Japanese }}</dd>
-      </div>
-      <div>
-        <dt>Episodes</dt>
-        <dd>{{ .EpisodeCount }}</dd>
-      </div>
-    </dl>
   </div>
 </sl-card>
 {{ end }}
