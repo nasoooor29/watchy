@@ -1,35 +1,142 @@
 {{ define "show-detail" }}
-<sl-card class="detail"
-  ><div class="detail-hero">
-    <div class="detail-top">
-      <div class="cover large">
+<sl-card class="show-detail">
+  <style>
+    .show-detail {
+      overflow: hidden;
+    }
+    .show-detail-hero {
+      padding: 1.25rem;
+      background: linear-gradient(90deg, rgb(124 58 237 / 0.16), transparent, rgb(192 38 211 / 0.16));
+    }
+    .show-detail-top {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.75rem;
+    }
+    .show-detail-cover {
+      flex: 0 0 7rem;
+      width: 7rem;
+      height: 10rem;
+      overflow: hidden;
+      border-radius: var(--sl-border-radius-medium);
+    }
+    .show-detail-cover img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .show-detail-copy {
+      min-width: 0;
+      flex: 1;
+    }
+    .show-detail-eyebrow {
+      margin: 0;
+      color: var(--sl-color-primary-400);
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+    .show-detail-title {
+      margin: 0.35rem 0 0;
+      color: white;
+      font-size: 1.5rem;
+    }
+    .show-detail-tags,
+    .show-detail-actions,
+    .show-detail-meta {
+      display: flex;
+      gap: 0.75rem;
+    }
+    .show-detail-tags {
+      flex-wrap: wrap;
+      gap: 0.4rem;
+      margin-top: 0.75rem;
+    }
+    .show-detail-actions {
+      flex-wrap: wrap;
+      margin-top: 1rem;
+    }
+    .show-detail-body {
+      padding: 1.25rem;
+    }
+    .show-detail-body h2 {
+      margin: 0;
+      color: white;
+      font-size: 1.125rem;
+    }
+    .show-detail-synopsis {
+      margin: 0.4rem 0 0;
+      color: var(--sl-color-neutral-400);
+      line-height: 1.5;
+    }
+    .show-detail-meta {
+      margin: 1rem 0 0;
+      padding-top: 1rem;
+      border-top: 1px solid var(--sl-color-neutral-700);
+    }
+    .show-detail-meta div {
+      flex: 1;
+    }
+    .show-detail-meta dt {
+      color: var(--sl-color-neutral-500);
+    }
+    .show-detail-meta dd {
+      margin: 0.25rem 0 0;
+    }
+    @media (max-width: 540px) {
+      .show-detail-top {
+        flex-direction: column;
+      }
+      .show-detail-cover {
+        align-self: center;
+      }
+      .show-detail-hero,
+      .show-detail-body {
+        padding: 1rem;
+      }
+    }
+  </style>
+  <div class="show-detail-hero">
+    <div class="show-detail-top">
+      <div class="show-detail-cover">
         <img
           src="http://localhost:3000/api/series-cover?name=Honzuki%20no%20Gekokujou%20Shisho%20ni%20Naru%20Tame%20ni%20wa%20Shudan%20wo%20Erandeiraremasen"
           alt="{{ .Title }} cover"
         />
       </div>
-      <div class="detail-copy">
-        <p class="eyebrow">Now watching</p>
-        <h1>{{ .Title }}</h1>
+      <div class="show-detail-copy">
+        <p class="show-detail-eyebrow">Now watching</p>
+        <h1 class="show-detail-title">{{ .Title }}</h1>
         <p class="subtle">{{ .Alternative }}</p>
-        <div class="tags">
-          {{ range .Tags }}<sl-tag size="small">{{ . }}</sl-tag>{{ end }}
+        <div class="show-detail-tags">
+          {{ range .Tags }}
+          <sl-tag size="small">{{ . }}</sl-tag>
+          {{ end }}
         </div>
-        <div class="detail-actions">
-          <sl-button variant="primary">Continue watching</sl-button
-          ><sl-button
-            ><sl-icon name="star" slot="prefix"></sl-icon>Add to
-            favourites</sl-button
-          >
+        <div class="show-detail-actions">
+          <sl-button variant="primary">Continue watching</sl-button>
+          <sl-button>
+            <sl-icon name="star" slot="prefix"></sl-icon>
+            Add to favourites
+          </sl-button>
         </div>
       </div>
     </div>
   </div>
-  <div class="detail-body">
-    <div>
-      <h2>Synopsis</h2>
-      <p class="synopsis">{{ .Synopsis }}</p>
-    </div>
-  </div></sl-card
->
+  <div class="show-detail-body">
+    <h2>Synopsis</h2>
+    <p class="show-detail-synopsis">{{ .Synopsis }}</p>
+    <dl class="show-detail-meta">
+      <div>
+        <dt>Japanese</dt>
+        <dd>{{ .Japanese }}</dd>
+      </div>
+      <div>
+        <dt>Episodes</dt>
+        <dd>{{ .EpisodeCount }}</dd>
+      </div>
+    </dl>
+  </div>
+</sl-card>
 {{ end }}
