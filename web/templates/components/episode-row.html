@@ -25,9 +25,9 @@
   <div class="episode-title">
     <p class="episode-name">{{ .Name }}</p>
     {{ if .Watched }}
-    <sl-badge variant="success" pill>Watched</sl-badge>
+    <sl-button size="small" variant="success">watched</sl-button>
     {{ else }}
-    <sl-button size="small" pill>Mark watched</sl-button>
+    <sl-button size="small">Mark watched</sl-button>
     {{ end }}
   </div>
   <div class="episode-sources">
