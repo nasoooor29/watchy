@@ -1,19 +1,47 @@
 {{ define "title" }}My account · Hanashi{{ end }} {{ define "content" }}
 <section class="account-card">
-  <sl-card
-    ><h1>Your account</h1>
+  <sl-card>
+    <style>
+      sl-alert {
+        margin-bottom: 1rem;
+      }
+    </style>
+
+    <h1>Your account</h1>
     <p class="subtle">Your account details.</p>
-    <table>
-      <tr>
-        <th>Name</th>
-        <td>{{ .Name }}</td>
-      </tr>
-      <tr>
-        <th>Email address</th>
-        <td>{{ .Email }}</td>
-      </tr>
-    </table></sl-card
-  ><sl-card
+    <form action="/me" method="post">
+      <table>
+        <tr>
+          <th>Name</th>
+          <td>
+            <sl-input name="name" value="{{ .Name }}" required></sl-input>
+          </td>
+        </tr>
+        <tr>
+          <th>Email address</th>
+          <td>
+            <sl-input
+              type="email"
+              name="email"
+              value="{{ .Email }}"
+              required
+            ></sl-input>
+          </td>
+        </tr>
+        <tr>
+          <th>Password</th>
+          <td>
+            <sl-input type="password" name="password"></sl-input>
+            <p class="subtle">Leave blank to keep your current password.</p>
+          </td>
+        </tr>
+      </table>
+      {{ if .Error }}<sl-alert variant="danger" open>{{ .Error }}</sl-alert>{{
+      end }}
+      <sl-button type="submit" variant="primary">Save changes</sl-button>
+    </form>
+  </sl-card>
+  <sl-card
     ><h2>Account</h2>
     <p class="subtle">You can sign out of this device at any time.</p>
     <form method="post" action="/logout">

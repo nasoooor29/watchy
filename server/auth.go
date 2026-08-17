@@ -63,12 +63,7 @@ func (s *Server) register(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	hash, err := bcrypt.GenerateFromPassword([]byte(input.Password), bcrypt.DefaultCost)
-	if err != nil {
-		http.Error(w, http.StatusText(500), 500)
-		return
-	}
-	user, err := s.DB.CreateUser(input.Name, input.Email, string(hash))
+	user, err := s.DB.UpsertUser("", input.Name, input.Email, input.Password)
 	if err != nil {
 		slog.Error("", "err", err)
 		http.Error(w, http.StatusText(500), 500)
@@ -81,6 +76,44 @@ func (s *Server) register(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	s.redirect(w, r, "/me")
+}
+
+type updateUserInput struct {
+	Name     string `validate:"required,min=2,max=100"`
+	Email    string `validate:"required,email,max=254"`
+	Password string `validate:"omitempty,min=8,max=72"`
+}
+
+func (s *Server) UpdateUser(w http.ResponseWriter, r *http.Request) {
+	user, err := utils.GetUserByCookie(r, s.DB)
+	if err != nil {
+		slog.Error("", "err", err)
+		http.Error(w, http.StatusText(500), 500)
+		return
+	}
+	uinp := updateUserInput{
+		Name:     strings.TrimSpace(r.FormValue("name")),
+		Email:    strings.ToLower(strings.TrimSpace(r.FormValue("email"))),
+		Password: r.FormValue("password"),
+	}
+
+	if err := validate.Struct(uinp); err != nil {
+		fmt.Printf("err: %v\n", err)
+		s.render(w, r, http.StatusBadRequest, "me.html", authPageData{
+			Name:  uinp.Name,
+			Email: uinp.Email,
+			Error: "Enter a name, a valid email address, and a password of at least 8 characters.",
+		})
+		return
+	}
+
+	user, err = s.DB.UpsertUser(user.Id, uinp.Name, uinp.Email, uinp.Password)
+	if err != nil {
+		slog.Error("", "err", err)
+		http.Error(w, http.StatusText(500), 500)
+		return
+	}
+	s.render(w, r, http.StatusOK, "me.html", authPageData{Name: user.Name, Email: user.Email})
 }
 
 func (s *Server) mePage(w http.ResponseWriter, r *http.Request) {

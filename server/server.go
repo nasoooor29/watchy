@@ -35,7 +35,9 @@ func (s *Server) RegisterRoutes() http.Handler {
 	mux.HandleFunc("POST /register", s.register)
 
 	mux.Handle("GET /me", mw.Auth(http.HandlerFunc(s.mePage)))
+	mux.Handle("POST /me", mw.Auth(http.HandlerFunc(s.UpdateUser)))
 	mux.Handle("POST /logout", mw.Auth(http.HandlerFunc(s.logout)))
+
 	return stack(mux)
 }
 
