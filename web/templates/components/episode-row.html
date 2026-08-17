@@ -1,14 +1,42 @@
 {{ define "episode-row" }}
-<sl-card class="episode"
-  ><div class="episode-title">
+<sl-card class="episode">
+  <style>
+    .episode::part(body) {
+      padding: 0.85rem;
+    }
+    .episode-title,
+    .episode-sources {
+      display: flex;
+      gap: 0.75rem;
+    }
+    .episode-title {
+      align-items: center;
+      justify-content: space-between;
+    }
+    .episode-name {
+      margin: 0;
+      font-size: 0.9rem;
+    }
+    .episode-sources {
+      flex-wrap: wrap;
+      margin-top: 0.75rem;
+    }
+  </style>
+  <div class="episode-title">
     <p class="episode-name">{{ .Name }}</p>
-    {{ if .Watched }}<sl-badge variant="success" pill>Watched</sl-badge>{{ else
-    }}<sl-button size="small" pill>Mark watched</sl-button>{{ end }}
+    {{ if .Watched }}
+    <sl-badge variant="success" pill>Watched</sl-badge>
+    {{ else }}
+    <sl-button size="small" pill>Mark watched</sl-button>
+    {{ end }}
   </div>
-  <div class="source-actions">
-    {{ range .Sources }}<sl-button size="small"
-      ><sl-icon name="play-fill" slot="prefix"></sl-icon>{{ .Label }}</sl-button
-    >{{ end }}
-  </div></sl-card
->
+  <div class="episode-sources">
+    {{ range .Sources }}
+    <sl-button size="small">
+      <sl-icon name="play-fill" slot="prefix"></sl-icon>
+      {{ .Label }}
+    </sl-button>
+    {{ end }}
+  </div>
+</sl-card>
 {{ end }}
