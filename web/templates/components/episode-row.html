@@ -1,19 +1,14 @@
 {{ define "episode-row" }}
-<div class="rounded-xl border border-slate-800 bg-slate-900/70 p-3">
-  <div class="flex items-center justify-between gap-3">
-    <p class="min-w-0 truncate text-sm font-medium text-slate-200">{{ .Name }}</p>
-    {{ if .Watched }}
-    <span class="shrink-0 rounded-full bg-emerald-400/10 px-2 py-1 text-[11px] font-semibold text-emerald-300">Watched</span>
-    {{ else }}
-    <button type="button" class="shrink-0 rounded-full border border-slate-700 px-2 py-1 text-[11px] font-semibold text-slate-400 transition hover:border-violet-400 hover:text-violet-200">Mark watched</button>
-    {{ end }}
+<sl-card class="episode"
+  ><div class="episode-title">
+    <p class="episode-name">{{ .Name }}</p>
+    {{ if .Watched }}<sl-badge variant="success" pill>Watched</sl-badge>{{ else
+    }}<sl-button size="small" pill>Mark watched</sl-button>{{ end }}
   </div>
-  <div class="mt-3 flex flex-wrap gap-2">
-    {{ range .Sources }}
-    <button type="button" class="rounded-lg bg-slate-800 px-2.5 py-1.5 text-xs font-medium text-slate-300 transition hover:bg-violet-500 hover:text-white">
-      <span class="mr-1 text-violet-300">▶</span>{{ .Label }}
-    </button>
-    {{ end }}
-  </div>
-</div>
+  <div class="source-actions">
+    {{ range .Sources }}<sl-button size="small"
+      ><sl-icon name="play-fill" slot="prefix"></sl-icon>{{ .Label }}</sl-button
+    >{{ end }}
+  </div></sl-card
+>
 {{ end }}
