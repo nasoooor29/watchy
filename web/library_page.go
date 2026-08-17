@@ -1,5 +1,7 @@
 package web
 
+import "fmt"
+
 type LibraryPage struct {
 	TotalSeries int
 	Shows       []LibraryShow
@@ -82,7 +84,7 @@ func DummyLibraryPage() LibraryPage {
 			Synopsis:     "Anime adaptation of part three of the Honzuki no Gekokujou light novel.",
 			Japanese:     "本好きの下剋上 ～司書になるためには手段を選んでいられません～",
 			EpisodeCount: 55,
-			Season: Season{Name: "Season 04", Episodes: dummyEpisodes()},
+			Season:       Season{Name: "Season 04", Episodes: dummyEpisodes()},
 		},
 		Stats: []LibraryStat{{Label: "Watching", Value: "0"}, {Label: "Missing eps", Value: "0"}, {Label: "Missing seasons", Value: "0"}, {Label: "MAL eps", Value: "-"}},
 	}
@@ -90,4 +92,17 @@ func DummyLibraryPage() LibraryPage {
 
 func dummySources() []EpisodeSource {
 	return []EpisodeSource{{Label: "1080p · WEBRip · HEVC · AAC"}, {Label: "1080p · WEB-DL · AVC · AAC"}}
+}
+
+func dummyEpisodes() []Episode {
+	episodes := make([]Episode, 55)
+	for i := range episodes {
+		number := 18 - i
+		episodes[i] = Episode{
+			Name:    fmt.Sprintf("E%02d - Honzuki No Gekokujou S4", number),
+			Watched: number < 18,
+			Sources: dummySources(),
+		}
+	}
+	return episodes
 }
