@@ -1,0 +1,44 @@
+{{ define "library-toolbar" }}
+<style>
+  .library-toolbar {
+    display: flex;
+    gap: 0.75rem;
+    margin-top: 1rem;
+  }
+  .library-toolbar sl-input {
+    flex: 1;
+  }
+  .library-toolbar sl-select {
+    width: 11rem;
+  }
+  @media (max-width: 540px) {
+    .library-toolbar {
+      flex-wrap: wrap;
+    }
+    .library-toolbar sl-select {
+      width: 100%;
+    }
+  }
+</style>
+<div class="library-toolbar">
+  <sl-input
+    type="search"
+    placeholder="Search your library"
+    aria-label="Search library"
+    size="small"
+  >
+    <sl-icon name="search" slot="prefix"></sl-icon>
+  </sl-input>
+
+  <sl-select value="recent" aria-label="Sort library" size="small">
+    <sl-option value="recent">Recently updated</sl-option>
+    <sl-option value="alphabetical">Alphabetical</sl-option>
+    <sl-option value="score">Score</sl-option>
+  </sl-select>
+
+  <sl-icon-button
+    name="arrow-clockwise"
+    label="Refresh library"
+  ></sl-icon-button>
+</div>
+{{ end }}
