@@ -1,47 +1,50 @@
 {{ define "title" }}Create account · Hanashi{{ end }} {{ define "content" }}
 <section class="auth-shell">
-  <article id="auth-card">
-    <header>
-      <hgroup>
-        <h1>Create your account</h1>
-        <p>A calmer place for better conversations.</p>
-      </hgroup>
-    </header>
-    {{ if .Error }}
-    <p role="alert">{{ .Error }}</p>
-    {{ end }}
-    <form method="post" action="/register" hx-post="/register" hx-target="#auth-card" hx-select="#auth-card" hx-swap="outerHTML">
-      <label
-        >Your name<input
-          name="name"
-          autocomplete="name"
-          value="{{ .Name }}"
-          placeholder="Your name"
-          required
-      /></label>
-      <label
-        >Email address<input
-          name="email"
-          type="email"
-          autocomplete="email"
-          value="{{ .Email }}"
-          placeholder="you@example.com"
-          required
-      /></label>
-      <label
-        >Password<input
-          name="password"
-          type="password"
-          autocomplete="new-password"
-          required
-      /></label>
-      <button type="submit">Create account</button>
+  <sl-card class="auth-card" id="auth-card"
+    ><h1>Create your account</h1>
+    <p class="subtle">A calmer place for better conversations.</p>
+    {{ if .Error }}<sl-alert variant="danger" open>{{ .Error }}</sl-alert>{{ end
+    }}
+    <form
+      method="post"
+      action="/register"
+      hx-post="/register"
+      hx-target="#auth-card"
+      hx-select="#auth-card"
+      hx-swap="outerHTML"
+    >
+      <sl-input
+        label="Your name"
+        name="name"
+        autocomplete="name"
+        value="{{ .Name }}"
+        placeholder="Your name"
+        required
+      ></sl-input
+      ><sl-input
+        label="Email address"
+        name="email"
+        type="email"
+        autocomplete="email"
+        value="{{ .Email }}"
+        placeholder="you@example.com"
+        required
+      ></sl-input
+      ><sl-input
+        label="Password"
+        name="password"
+        type="password"
+        autocomplete="new-password"
+        required
+        password-toggle
+      ></sl-input
+      ><sl-button type="submit" variant="primary">Create account</sl-button>
     </form>
     <footer>
-      <small class="muted"
-        >Already have an account? <a href="/login">Sign in</a>.</small
+      <span class="muted"
+        >Already have an account? <a href="/login">Sign in</a>.</span
       >
-    </footer>
-  </article>
+    </footer></sl-card
+  >
 </section>
 {{ end }}

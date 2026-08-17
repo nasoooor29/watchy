@@ -1,34 +1,301 @@
-{{ define "title" }}Library · Hanashi{{ end }}
-
-{{ define "content" }}
-<div class="-m-4 flex h-screen min-h-0 flex-col gap-4 overflow-hidden bg-slate-950 p-4 sm:-m-8 sm:p-4 xl:flex-row">
-  <aside class="flex min-h-0 min-w-0 flex-col gap-4 overflow-hidden xl:h-full xl:w-2/5">
-      <div class="rounded-2xl border border-slate-800 bg-slate-900/60 p-4">
-        <div class="mb-4 flex items-start justify-between gap-4">
-          <div><div class="flex items-center gap-2 text-sm font-semibold text-violet-300"><span class="grid h-7 w-7 place-items-center rounded-lg bg-violet-500 text-white">H</span> Hanashi</div><h1 class="mt-3 text-2xl font-bold tracking-tight text-white">Your library</h1><p class="mt-1 text-sm text-slate-400">{{ .TotalSeries }} series, all in one place.</p></div>
-          <button type="button" aria-label="Refresh library" class="shrink-0 rounded-xl border border-slate-700 bg-slate-900 px-3 py-2 text-sm font-semibold text-slate-200 transition hover:border-violet-400 hover:text-white">↻</button>
-        </div>
-        <div class="flex gap-2">
-          <label class="relative min-w-0 flex-1"><span class="sr-only">Search library</span><span class="pointer-events-none absolute inset-y-0 left-3 grid place-items-center text-slate-500">⌕</span><input type="search" placeholder="Search your library" class="w-full rounded-xl border border-slate-700 bg-slate-950 px-9 py-2.5 text-sm text-slate-100 placeholder:text-slate-500 outline-none transition focus:border-violet-400 focus:ring-2 focus:ring-violet-400/20" /></label>
-          <select aria-label="Sort library" class="rounded-xl border border-slate-700 bg-slate-950 px-3 py-2.5 text-sm text-slate-300 outline-none focus:border-violet-400"><option>Recently updated</option><option>Alphabetical</option><option>Score</option></select>
-        </div>
-      </div>
-      <div class="grid min-h-0 flex-1 auto-rows-max grid-cols-2 content-start gap-2 overflow-y-auto pr-1">
+{{ define "title" }}Library · Hanashi{{ end }} {{ define "content" }}
+<style>
+  .library-page {
+    max-width: 1600px;
+    margin: 0 auto;
+  }
+  .library-layout {
+    display: grid;
+    gap: 1rem;
+  }
+  .library-sidebar,
+  .library-content {
+    display: flex;
+    min-width: 0;
+    flex-direction: column;
+    gap: 1rem;
+  }
+  .library-header::part(body),
+  .episodes::part(body),
+  .episode::part(body) {
+    padding: 1rem;
+  }
+  .toolbar,
+  .section-heading,
+  .episode-title,
+  .detail-top,
+  .detail-actions,
+  .meta-grid,
+  .source-actions {
+    display: flex;
+    gap: 0.75rem;
+  }
+  .section-heading,
+  .episode-title {
+    align-items: center;
+    justify-content: space-between;
+  }
+  .library-page h1,
+  .library-page h2,
+  .library-page p {
+    margin: 0;
+  }
+  .library-page h1 {
+    color: white;
+    font-size: 1.5rem;
+  }
+  .library-page h2 {
+    color: white;
+    font-size: 1.125rem;
+  }
+  .subtle,
+  .muted {
+    color: var(--sl-color-neutral-400);
+  }
+  .subtle {
+    margin-top: 0.25rem !important;
+    font-size: 0.875rem;
+  }
+  .toolbar {
+    margin-top: 1rem;
+  }
+  .toolbar sl-input {
+    flex: 1;
+  }
+  .toolbar sl-select {
+    width: 11rem;
+  }
+  .library-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.65rem;
+    overflow-y: auto;
+    padding-right: 0.25rem;
+  }
+  .library-card {
+    height: 8.75rem;
+  }
+  .library-card::part(base) {
+    height: 100%;
+  }
+  .card-content {
+    display: flex;
+    height: 100%;
+    gap: 0.55rem;
+    padding: 0.45rem;
+  }
+  .cover {
+    display: grid;
+    flex: 0 0 4rem;
+    width: 4rem;
+    height: 5.5rem;
+    place-items: center;
+    overflow: hidden;
+    border-radius: var(--sl-border-radius-medium);
+    background: linear-gradient(135deg, #8b5cf6, #c026d3);
+  }
+  .cover.large {
+    flex-basis: 7rem;
+    width: 7rem;
+    height: 10rem;
+  }
+  .cover img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .card-info,
+  .detail-copy {
+    min-width: 0;
+    flex: 1;
+  }
+  .card-info {
+    display: flex;
+    flex-direction: column;
+  }
+  .card-title {
+    display: -webkit-box;
+    overflow: hidden;
+    color: white;
+    font-size: 0.9rem;
+    line-height: 1.35;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+  }
+  .rating {
+    align-self: flex-start;
+    float: right;
+    margin-left: auto;
+  }
+  .card-meta {
+    margin-top: 0.35rem !important;
+    color: var(--sl-color-neutral-400);
+    font-size: 0.75rem;
+  }
+  .progress-count {
+    margin-top: auto;
+    align-self: flex-start;
+  }
+  .card-badges {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 0.35rem;
+    margin-bottom: 0.35rem;
+  }
+  .card-badges .rating,
+  .card-badges .progress-count {
+    align-self: auto;
+    float: none;
+    margin: 0;
+  }
+  .progress-count {
+    color: var(--sl-color-primary-400);
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.01em;
+  }
+  .detail {
+    overflow: hidden;
+  }
+  .detail-hero {
+    padding: 1.25rem;
+    background: linear-gradient(
+      90deg,
+      rgb(124 58 237 / 0.16),
+      transparent,
+      rgb(192 38 211 / 0.16)
+    );
+  }
+  .detail-top {
+    align-items: flex-start;
+  }
+  .eyebrow {
+    color: var(--sl-color-primary-400);
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+  .tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    margin-top: 0.75rem;
+  }
+  .detail-actions {
+    flex-wrap: wrap;
+    margin-top: 1rem;
+  }
+  .detail-body {
+    padding: 1.25rem;
+  }
+  .synopsis {
+    margin-top: 0.4rem !important;
+    color: var(--sl-color-neutral-400);
+    line-height: 1.5;
+  }
+  .meta-grid {
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--sl-color-neutral-700);
+  }
+  .meta-grid div {
+    flex: 1;
+  }
+  .meta-grid dt {
+    color: var(--sl-color-neutral-500);
+  }
+  .meta-grid dd {
+    margin: 0.25rem 0 0;
+  }
+  .episode-list {
+    display: grid;
+    gap: 0.5rem;
+    margin-top: 0.75rem;
+  }
+  .episode-name {
+    font-size: 0.9rem;
+  }
+  .source-actions {
+    flex-wrap: wrap;
+    margin-top: 0.75rem;
+  }
+  @media (min-width: 1100px) {
+    .library-layout {
+      grid-template-columns: minmax(30rem, 2fr) minmax(36rem, 3fr);
+      height: calc(100vh - 2rem);
+    }
+    .library-sidebar {
+      overflow: hidden;
+    }
+    .library-content {
+      overflow-y: auto;
+      padding-right: 0.25rem;
+    }
+  }
+  @media (max-width: 540px) {
+    .toolbar {
+      flex-wrap: wrap;
+    }
+    .toolbar sl-select {
+      width: 100%;
+    }
+    .library-grid {
+      grid-template-columns: 1fr;
+    }
+    .detail-top {
+      flex-direction: column;
+    }
+    .cover.large {
+      align-self: center;
+    }
+    .detail-hero,
+    .detail-body {
+      padding: 1rem;
+    }
+  }
+</style>
+<div class="library-page">
+  <div class="library-layout">
+    <aside class="library-sidebar">
+      <sl-card class="library-header">
+        <div class="toolbar">
+          <sl-input
+            type="search"
+            placeholder="Search your library"
+            aria-label="Search library"
+            ><sl-icon name="search" slot="prefix"></sl-icon></sl-input
+          ><sl-select value="recent" aria-label="Sort library"
+            ><sl-option value="recent">Recently updated</sl-option
+            ><sl-option value="alphabetical">Alphabetical</sl-option
+            ><sl-option value="score">Score</sl-option></sl-select
+          >
+          <sl-icon-button name="arrow-clockwise" label="Refresh library">
+          </sl-icon-button></div
+      ></sl-card>
+      <div class="library-grid">
         {{ range .Shows }}{{ template "library-card" . }}{{ end }}
       </div>
-
-  </aside>
-  <div class="flex min-h-0 min-w-0 flex-1 flex-col gap-4 overflow-y-auto pr-1 xl:w-3/5">
-    <div class="shrink-0">
-      {{ template "show-detail" .Selected }}
+    </aside>
+    <div class="library-content">
+      <div>{{ template "show-detail" .Selected }}</div>
+      <sl-card class="episodes"
+        ><div class="section-heading">
+          <div>
+            <h2>Seasons &amp; episodes</h2>
+            <p class="subtle">Pick an available release to start watching.</p>
+          </div>
+          <sl-badge pill>{{ .Selected.EpisodeCount }} episodes</sl-badge>
+        </div>
+        <sl-details open summary="{{ .Selected.Season.Name }}"
+          ><div class="episode-list">
+            {{ range .Selected.Season.Episodes }}{{ template "episode-row" .
+            }}{{ end }}
+          </div></sl-details
+        ></sl-card
+      >
     </div>
-    <section class="min-h-0 shrink-0 rounded-2xl border border-slate-800 bg-slate-900/70 p-4 sm:p-5">
-        <div class="flex items-center justify-between gap-4"><div><h2 class="text-lg font-semibold text-white">Seasons & episodes</h2><p class="mt-1 text-sm text-slate-400">Pick an available release to start watching.</p></div><span class="rounded-full bg-slate-800 px-2.5 py-1 text-xs font-medium text-slate-300">{{ .Selected.EpisodeCount }} episodes</span></div>
-        <details open class="mt-4 group">
-          <summary class="flex cursor-pointer list-none items-center justify-between rounded-xl border border-slate-800 bg-slate-950/40 px-4 py-3 text-sm font-semibold text-slate-200 marker:content-none"><span>{{ .Selected.Season.Name }}</span><span class="text-slate-500 transition group-open:rotate-180">⌄</span></summary>
-          <div class="mt-3 space-y-2">{{ range .Selected.Season.Episodes }}{{ template "episode-row" . }}{{ end }}</div>
-        </details>
-      </section>
   </div>
 </div>
 {{ end }}

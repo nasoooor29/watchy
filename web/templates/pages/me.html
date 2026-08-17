@@ -1,12 +1,8 @@
 {{ define "title" }}My account · Hanashi{{ end }} {{ define "content" }}
 <section class="account-card">
-  <article>
-    <header>
-      <hgroup>
-        <h1>Your account</h1>
-        <p>Your account details.</p>
-      </hgroup>
-    </header>
+  <sl-card
+    ><h1>Your account</h1>
+    <p class="subtle">Your account details.</p>
     <table>
       <tr>
         <th>Name</th>
@@ -16,14 +12,15 @@
         <th>Email address</th>
         <td>{{ .Email }}</td>
       </tr>
-    </table>
-  </article>
-  <article>
-    <header><strong>Account</strong></header>
-    <p class="muted">You can sign out of this device at any time.</p>
+    </table></sl-card
+  ><sl-card
+    ><h2>Account</h2>
+    <p class="subtle">You can sign out of this device at any time.</p>
     <form method="post" action="/logout">
-      <button class="secondary outline">Sign out</button>
-    </form>
-  </article>
+      <sl-button class="sign-out" type="submit" variant="neutral" outline
+        >Sign out</sl-button
+      >
+    </form></sl-card
+  >
 </section>
 {{ end }}
