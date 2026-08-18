@@ -25,7 +25,7 @@ func (s *Server) RegisterRoutes() http.Handler {
 			s.render(w, r, http.StatusNotFound, "404.html")
 			return
 		}
-		s.render(w, r, http.StatusOK, "home.html", web.DummyLibraryPage())
+		s.ShowsPage(w, r)
 	})
 
 	mux.HandleFunc("GET /login", s.RenderPageHandler("login.html"))
@@ -35,6 +35,7 @@ func (s *Server) RegisterRoutes() http.Handler {
 	mux.HandleFunc("POST /register", s.register)
 
 	mux.Handle("GET /me", mw.Auth(http.HandlerFunc(s.mePage)))
+	mux.Handle("GET /covers/{ShowName}", mw.cacheStaticFiles(mw.Auth(http.HandlerFunc(s.GetShowCover))))
 	mux.Handle("POST /me", mw.Auth(http.HandlerFunc(s.UpdateUser)))
 	mux.Handle("POST /logout", mw.Auth(http.HandlerFunc(s.logout)))
 
@@ -86,20 +87,22 @@ func StartServer() {
 	httpServer.ListenAndServe()
 }
 
-func (s *Server) render(w http.ResponseWriter, r *http.Request, status int, page string, data ...any) {
+func (s *Server) render(w http.ResponseWriter, r *http.Request, status int, page string, data ...any) error {
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 	if r.Header.Get("HX-Request") == "true" {
 		w.WriteHeader(http.StatusOK)
 		if len(data) > 0 {
 			if err := web.RenderContent(w, page, data[0]); err != nil {
 				slog.Error("rendering page fragment failed", "page", page, "err", err)
+				return err
 			}
 		} else {
 			if err := web.RenderContent(w, page, nil); err != nil {
 				slog.Error("rendering page fragment failed", "page", page, "err", err)
+				return err
 			}
 		}
-		return
+		return nil
 	}
 	w.WriteHeader(status)
 	var pageData any
@@ -108,7 +111,9 @@ func (s *Server) render(w http.ResponseWriter, r *http.Request, status int, page
 	}
 	if err := web.RenderBase(w, page, pageData); err != nil {
 		slog.Error("rendering page failed", "page", page, "err", err)
+		return err
 	}
+	return nil
 }
 
 func (s *Server) redirect(w http.ResponseWriter, r *http.Request, location string) {

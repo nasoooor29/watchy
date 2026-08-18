@@ -2,43 +2,186 @@
 <style>
   .library-toolbar {
     display: flex;
+    align-items: center;
     gap: 0.75rem;
     margin-top: 1rem;
   }
+
   .library-toolbar sl-input {
     flex: 1;
   }
+
   .library-toolbar sl-select {
     width: 11rem;
   }
-  @media (max-width: 540px) {
+
+  .library-search-mode {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    white-space: nowrap;
+  }
+
+  @media (max-width: 700px) {
     .library-toolbar {
       flex-wrap: wrap;
     }
+
+    .library-toolbar sl-input,
     .library-toolbar sl-select {
       width: 100%;
     }
   }
 </style>
+
 <div class="library-toolbar">
   <sl-input
+    id="library-search"
     type="search"
     placeholder="Search your library"
     aria-label="Search library"
     size="small"
+    clearable
   >
     <sl-icon name="search" slot="prefix"></sl-icon>
   </sl-input>
 
-  <sl-select value="recent" aria-label="Sort library" size="small">
+  <div class="library-search-mode">
+    <sl-switch id="complex-search" size="small"> Complex </sl-switch>
+  </div>
+
+  <sl-select
+    id="library-sort"
+    value="recent"
+    aria-label="Sort library"
+    size="small"
+  >
     <sl-option value="recent">Recently updated</sl-option>
     <sl-option value="alphabetical">Alphabetical</sl-option>
     <sl-option value="score">Score</sl-option>
   </sl-select>
 
   <sl-icon-button
+    id="library-refresh"
     name="arrow-clockwise"
     label="Refresh library"
   ></sl-icon-button>
 </div>
+
+<script>
+  (() => {
+    const search = document.querySelector("#library-search");
+    const complex = document.querySelector("#complex-search");
+
+    if (!search || !complex) return;
+
+    function simpleSearch(card, query) {
+      const searchable = [
+        card.dataset.title,
+        ...Object.values(card.dataset),
+        card.textContent,
+      ]
+        .filter(Boolean)
+        .join(" ")
+        .toLowerCase();
+
+      const terms = query.toLowerCase().split(/\s+/).filter(Boolean);
+
+      return terms.every((term) => searchable.includes(term));
+    }
+
+    function compare(actual, operator, expected) {
+      const a = actual.trim();
+      const b = expected.trim();
+
+      switch (operator) {
+        case "=":
+          return a.toLowerCase() === b.toLowerCase();
+
+        case "!=":
+          return a.toLowerCase() !== b.toLowerCase();
+
+        case "~":
+          return a.toLowerCase().includes(b.toLowerCase());
+
+        case "!~":
+          return !a.toLowerCase().includes(b.toLowerCase());
+
+        case ">":
+          return Number(a) > Number(b);
+
+        case ">=":
+          return Number(a) >= Number(b);
+
+        case "<":
+          return Number(a) < Number(b);
+
+        case "<=":
+          return Number(a) <= Number(b);
+
+        default:
+          return false;
+      }
+    }
+
+    function complexSearch(card, query) {
+      const expressions = query
+        .split("&&")
+        .map((expression) => expression.trim())
+        .filter(Boolean);
+
+      return expressions.every((expression) => {
+        const match = expression.match(
+          /^([\w-]+)\s*(>=|<=|!=|!~|=|>|<|~)\s*(.+)$/,
+        );
+
+        if (!match) {
+          return false;
+        }
+
+        const [, key, operator, expected] = match;
+
+        const actual = card.dataset[key];
+
+        if (actual == null) {
+          return false;
+        }
+
+        return compare(actual, operator, expected);
+      });
+    }
+
+    function applySearch() {
+      const query = search.value.trim();
+      console.log("applying", query);
+
+      document.querySelectorAll(".library-card").forEach((card) => {
+        if (!query) {
+          card.style.display = "";
+          return;
+        }
+
+        const matches = complex.checked
+          ? complexSearch(card, query)
+          : simpleSearch(card, query);
+        console.log(card.dataset.title, matches);
+
+        card.style.display = matches ? "" : "none";
+      });
+    }
+
+    function updateMode() {
+      if (complex.checked) {
+        search.placeholder = "year=2025 && themes~isekai && score>=7";
+      } else {
+        search.placeholder = "Search your library";
+      }
+
+      applySearch();
+    }
+
+    search.addEventListener("sl-input", applySearch);
+    complex.addEventListener("sl-change", updateMode);
+  })();
+</script>
 {{ end }}

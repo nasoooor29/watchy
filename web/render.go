@@ -1,6 +1,7 @@
 package web
 
 import (
+	"backend/utils"
 	"fmt"
 	"html/template"
 	"io"
@@ -21,6 +22,7 @@ func newTemplates() *Templates {
 	if err != nil {
 		panic(err)
 	}
+	funcs := utils.GetFuncMap()
 
 	for _, page := range pages {
 		name := filepath.Base(page)
@@ -39,7 +41,7 @@ func newTemplates() *Templates {
 
 		files = append(files, components...)
 
-		tmpl, err := template.ParseFiles(files...)
+		tmpl, err := template.New(name).Funcs(funcs).ParseFiles(files...)
 		if err != nil {
 			panic(err)
 		}

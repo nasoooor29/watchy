@@ -2,6 +2,7 @@ package models
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 )
 
@@ -54,3 +55,5 @@ var (
 		Status: http.StatusNotFound,
 	}
 )
+
+var ErrHidden = fmt.Errorf("Dir Is Hidden")
