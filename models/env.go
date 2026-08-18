@@ -26,7 +26,6 @@ func GetEnv() *EnvVars {
 	err := LoadEnvFile(".env")
 	if err != nil {
 		slog.Error("", "err", err)
-		panic(err)
 	}
 	return &EnvVars{
 		Port:          EnvInt("PORT", 8080),
