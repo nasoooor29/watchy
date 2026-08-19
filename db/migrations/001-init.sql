@@ -12,4 +12,10 @@ CREATE TABLE IF NOT EXISTS cookies (
     FOREIGN KEY (userid) REFERENCES users(id) ON DELETE CASCADE
 );
 
+CREATE TABLE items (
+    id INTEGER PRIMARY KEY AUTOINCREMENT, -- Your own internal application ID
+    title TEXT NOT NULL,
+    mal_id INTEGER, -- For jikan/mal
+);
+
 CREATE INDEX IF NOT EXISTS idx_cookies_userid ON cookies(userid);
