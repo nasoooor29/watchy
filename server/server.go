@@ -3,6 +3,7 @@ package server
 import (
 	"backend/db"
 	"backend/models"
+	"backend/source"
 	"backend/web"
 	"fmt"
 	"log/slog"
@@ -40,8 +41,9 @@ func (s *Server) RegisterRoutes() http.Handler {
 }
 
 type Server struct {
-	DB  *db.SQL
-	ENV *models.EnvVars
+	DB      *db.SQL
+	Indexer *source.Indexer
+	env     *models.EnvVars
 }
 
 func StartServer() {
@@ -52,10 +54,12 @@ func StartServer() {
 		slog.Error("", "err", err)
 		panic(err)
 	}
+	idxr := source.NewIndexer(env, db)
 	defer db.Close()
 	server := &Server{
-		DB:  db,
-		ENV: env,
+		DB:      db,
+		env:     env,
+		Indexer: idxr,
 	}
 
 	// create mux

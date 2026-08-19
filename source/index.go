@@ -12,22 +12,20 @@ import (
 )
 
 type Indexer struct {
-	db   *db.SQL
-	env  *models.EnvVars
-	path string
+	db  *db.SQL
+	env *models.EnvVars
 }
 
-func NewIndexer(path string, env *models.EnvVars, db *db.SQL) *Indexer {
+func NewIndexer(env *models.EnvVars, db *db.SQL) *Indexer {
 
 	return &Indexer{
-		path: path,
-		env:  env,
-		db:   db,
+		env: env,
+		db:  db,
 	}
 }
 
 func (i *Indexer) getShows() ([]string, error) {
-	entries, err := os.ReadDir(i.path)
+	entries, err := os.ReadDir(i.env.TvDir)
 	if err != nil {
 		return nil, err
 	}
@@ -51,7 +49,7 @@ func (i *Indexer) IndexShows() error {
 	client := http.DefaultClient
 	sources := NewSources(NewKitsuSource(i.env.KitsuBaseURL, client))
 	for _, show := range shows {
-		showPath := filepath.Join(i.path, show)
+		showPath := filepath.Join(i.env.TvDir, show)
 		_, err := i.db.GetShowByPath(showPath)
 		if err == nil {
 			slog.Debug("show", show, "already exists")
@@ -76,11 +74,38 @@ func (i *Indexer) IndexShows() error {
 		if err != nil {
 			return err
 		}
-		_, err = i.db.CreateShow(poster, filepath.Join(i.path, show), detail.Title, 0)
+		_, err = i.db.CreateShow(poster, filepath.Join(i.env.TvDir, show), detail.Title, 0)
 		if err != nil {
 			return err
 		}
 
 	}
 	return nil
+}
+
+func (i *Indexer) IndexShow(path string) (*db.Show, error) {
+	client := http.DefaultClient
+	sources := NewSources(NewKitsuSource(i.env.KitsuBaseURL, client))
+	show, err := i.db.GetShowByPath(path)
+	if err == nil {
+		return show, nil
+	}
+	detail, err := sources.GetMetadata(show.Title)
+	if err != nil {
+		return nil, err
+	}
+	resp, err := client.Get(detail.Image)
+	if err != nil {
+		return nil, err
+	}
+
+	poster, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, err
+	}
+	show, err = i.db.CreateShow(poster, filepath.Join(i.env.TvDir, show.Path), detail.Title, 0)
+	if err != nil {
+		return nil, err
+	}
+	return show, nil
 }
