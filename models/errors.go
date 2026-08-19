@@ -2,6 +2,7 @@ package models
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 )
 
@@ -53,4 +54,9 @@ var (
 		Msg:    "Resource not found",
 		Status: http.StatusNotFound,
 	}
+)
+
+var (
+	ErrHidden                = fmt.Errorf("Dir Is Hidden")
+	ErrFailedToFetchMetaData = fmt.Errorf("Failed to fetch metadata")
 )

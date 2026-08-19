@@ -16,6 +16,12 @@ type LibraryShow struct {
 	Image    string
 }
 
+type LibraryEpisode struct {
+	Name    string
+	Watched bool
+	Sources []EpisodeSource
+}
+
 type ShowDetail struct {
 	Title        string
 	Alternative  string
@@ -36,13 +42,7 @@ type LibraryStat struct {
 
 type Season struct {
 	Name     string
-	Episodes []Episode
-}
-
-type Episode struct {
-	Name    string
-	Watched bool
-	Sources []EpisodeSource
+	Episodes []LibraryEpisode
 }
 
 type EpisodeSource struct {

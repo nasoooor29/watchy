@@ -12,12 +12,16 @@ func TestFetchDetails(t *testing.T) {
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		var filepath string
 		switch r.URL.Path {
-		case "/anime/1":
-			filepath = "testdata/kitsu/anime/1/detail.json"
+		case "/anime":
+			if r.URL.String() == "/anime?filter%5Btext%5D=Cowboy+Bebop" {
+				filepath = "testdata/kitsu/anime/1/detail.json"
+				break
+			}
+			fallthrough
 		case "/anime/1/genres":
 			filepath = "testdata/kitsu/anime/1/genres.json"
 		default:
-			t.Fatalf("unexpected route hit bro: %s", r.URL.Path)
+			t.Fatalf("unexpected route hit: %s", r.URL.Path)
 		}
 		payload, err := os.ReadFile(filepath)
 		if err != nil {
@@ -33,9 +37,8 @@ func TestFetchDetails(t *testing.T) {
 	defer server.Close()
 
 	src := NewKitsuSource(server.URL, server.Client())
-	targetID := ID{id: 1, Platform: PlatformKitsu}
 
-	res, err := src.FetchDetails(targetID)
+	res, err := src.FetchDetails("Cowboy Bebop")
 	if err != nil {
 		t.Fatalf("expected no error, got: %v", err)
 	}

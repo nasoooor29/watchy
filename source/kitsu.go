@@ -3,9 +3,9 @@ package source
 import (
 	"backend/models"
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"net/url"
-	"strconv"
 	"time"
 )
 
@@ -26,12 +26,19 @@ func NewKitsuSource(baseURL string, client *http.Client) ExternalSource {
 }
 
 // FetchDetails implements [ExternalSource].
-func (k *KitsuSource) FetchDetails(id ID) (*models.ShowDetail, error) {
-	u, err := url.JoinPath(k.baseURL, "anime", strconv.Itoa(id.id))
+func (k *KitsuSource) FetchDetails(title string) (*models.ShowDetail, error) {
+	u, err := url.Parse(k.baseURL)
 	if err != nil {
 		return nil, err
 	}
-	resp, err := k.client.Get(u)
+	u = u.JoinPath("anime")
+	q := u.Query()
+	q.Set("filter[text]", title)
+	u.RawQuery = q.Encode()
+
+	fmt.Printf("u.String(): %v\n", u.String())
+
+	resp, err := k.client.Get(u.String())
 	if err != nil {
 		return nil, err
 	}
@@ -40,16 +47,24 @@ func (k *KitsuSource) FetchDetails(id ID) (*models.ShowDetail, error) {
 	if err != nil {
 		return nil, err
 	}
-	tags, err := k.fetchGenres(details.Data.Relationships.Genres.Links.Related)
+	fmt.Printf("details: %v\n", details)
+	if len(details.Data) < 1 {
+		return nil, models.ErrInternalServerError
+	}
+	data := details.Data[0]
+	tags, err := k.fetchGenres(data.Relationships.Genres.Links.Related)
+	if err != nil {
+		return nil, err
+	}
 
 	return &models.ShowDetail{
-		Title:        details.Data.Attributes.Titles.EnJp,
-		Alternative:  details.Data.Attributes.Titles.En,
-		Image:        details.Data.Attributes.PosterImage.Original,
+		Title:        title,
+		Alternative:  data.Attributes.Titles.En,
+		Image:        data.Attributes.PosterImage.Original,
 		Tags:         tags,
-		Synopsis:     details.Data.Attributes.Synopsis,
-		Japanese:     details.Data.Attributes.Titles.JaJp,
-		EpisodeCount: details.Data.Attributes.EpisodeCount,
+		Synopsis:     data.Attributes.Synopsis,
+		Japanese:     data.Attributes.Titles.JaJp,
+		EpisodeCount: data.Attributes.EpisodeCount,
 	}, nil
 }
 
@@ -95,7 +110,7 @@ type kitsuGenres struct {
 }
 
 type kitsuDetails struct {
-	Data struct {
+	Data []struct {
 		ID    string `json:"id"`
 		Type  string `json:"type"`
 		Links struct {
@@ -304,4 +319,11 @@ type kitsuDetails struct {
 			} `json:"animeStaff"`
 		} `json:"relationships"`
 	} `json:"data"`
+	Meta struct {
+		Count int `json:"count"`
+	} `json:"meta"`
+	Links struct {
+		First string `json:"first"`
+		Last  string `json:"last"`
+	} `json:"links"`
 }
