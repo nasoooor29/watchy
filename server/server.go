@@ -40,7 +40,8 @@ func (s *Server) RegisterRoutes() http.Handler {
 }
 
 type Server struct {
-	DB *db.SQL
+	DB  *db.SQL
+	ENV *models.EnvVars
 }
 
 func StartServer() {
@@ -53,7 +54,8 @@ func StartServer() {
 	}
 	defer db.Close()
 	server := &Server{
-		DB: db,
+		DB:  db,
+		ENV: env,
 	}
 
 	// create mux

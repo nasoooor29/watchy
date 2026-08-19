@@ -48,11 +48,11 @@ func dummySources() []models.EpisodeSource {
 	return []models.EpisodeSource{{Label: "1080p · WEBRip · HEVC · AAC"}, {Label: "1080p · WEB-DL · AVC · AAC"}}
 }
 
-func dummyEpisodes() []models.Episode {
-	episodes := make([]models.Episode, 55)
+func dummyEpisodes() []models.LibraryEpisode {
+	episodes := make([]models.LibraryEpisode, 55)
 	for i := range episodes {
 		number := 18 - i
-		episodes[i] = models.Episode{
+		episodes[i] = models.LibraryEpisode{
 			Name:    fmt.Sprintf("E%02d - Honzuki No Gekokujou S4", number),
 			Watched: number < 18,
 			Sources: dummySources(),

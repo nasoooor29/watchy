@@ -22,6 +22,6 @@ func NewJikanSource(baseURL string, client *http.Client) ExternalSource {
 }
 
 // FetchDetails implements [ExternalSource].
-func (j *JikanSource) FetchDetails(id ID) (*models.ShowDetail, error) {
+func (j *JikanSource) FetchDetails(title string) (*models.ShowDetail, error) {
 	panic("unimplemented")
 }

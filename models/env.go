@@ -22,7 +22,7 @@ type EnvVars struct {
 	TvDir string
 
 	KitsuBaseURL string
-	KitsuToken   string
+	// KitsuToken   string
 }
 
 func GetEnv() *EnvVars {
@@ -40,7 +40,7 @@ func GetEnv() *EnvVars {
 		LogLevel:      EnvString("LOG_LEVEL", "debug"),
 		Timeout:       EnvInt("TIMEOUT", 30),
 		TvDir:         EnvString("TV_DIR", "/mnt/Thicc32/tv"),
-		KitsuBaseURL:  EnvString("KitsuBaseURL", "kitsu.io"),
+		KitsuBaseURL:  EnvString("KitsuBaseURL", "https://kitsu.io/api/edge"),
 		// KitsuToken:    EnvString("KitsuToken", ""),
 	}
 }
