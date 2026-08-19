@@ -10,11 +10,12 @@ func TestIndexShows(t *testing.T) {
 	env := models.GetEnv()
 	env.DatabaseURL = "/tmp/db.sqlite3"
 	env.MigrationsDir = "../db/migrations/"
+	env.TvDir = "testdata/index"
 	db, err := db.GetDB(env)
 	if err != nil {
 		t.Fatalf("expected no error, got: %v", err)
 	}
-	idxr := NewIndexer("testdata/index", env, db)
+	idxr := NewIndexer(env, db)
 	err = idxr.IndexShows()
 	if err != nil {
 		t.Fatalf("expected no error, got: %v", err)
