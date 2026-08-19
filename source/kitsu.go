@@ -36,8 +36,6 @@ func (k *KitsuSource) FetchDetails(title string) (*models.ShowDetail, error) {
 	q.Set("filter[text]", title)
 	u.RawQuery = q.Encode()
 
-	fmt.Printf("u.String(): %v\n", u.String())
-
 	resp, err := k.client.Get(u.String())
 	if err != nil {
 		return nil, err
