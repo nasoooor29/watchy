@@ -1,0 +1,95 @@
+{
+  "data": [
+    {
+      "id": "1",
+      "type": "genres",
+      "links": {
+        "self": "https://kitsu.io/api/edge/genres/1"
+      },
+      "attributes": {
+        "createdAt": "2013-02-20T16:00:15.623Z",
+        "updatedAt": "2016-07-17T19:30:56.164Z",
+        "name": "Action",
+        "slug": "action",
+        "description": ""
+      }
+    },
+    {
+      "id": "2",
+      "type": "genres",
+      "links": {
+        "self": "https://kitsu.io/api/edge/genres/2"
+      },
+      "attributes": {
+        "createdAt": "2013-02-20T16:00:15.657Z",
+        "updatedAt": "2017-04-22T16:11:16.077Z",
+        "name": "Adventure",
+        "slug": "adventure",
+        "description": ""
+      }
+    },
+    {
+      "id": "3",
+      "type": "genres",
+      "links": {
+        "self": "https://kitsu.io/api/edge/genres/3"
+      },
+      "attributes": {
+        "createdAt": "2013-02-20T16:00:15.671Z",
+        "updatedAt": "2013-02-20T16:00:15.671Z",
+        "name": "Comedy",
+        "slug": "comedy",
+        "description": null
+      }
+    },
+    {
+      "id": "4",
+      "type": "genres",
+      "links": {
+        "self": "https://kitsu.io/api/edge/genres/4"
+      },
+      "attributes": {
+        "createdAt": "2013-02-20T16:00:15.686Z",
+        "updatedAt": "2016-06-10T11:23:00.431Z",
+        "name": "Drama",
+        "slug": "drama",
+        "description": ""
+      }
+    },
+    {
+      "id": "5",
+      "type": "genres",
+      "links": {
+        "self": "https://kitsu.io/api/edge/genres/5"
+      },
+      "attributes": {
+        "createdAt": "2013-02-20T16:00:15.701Z",
+        "updatedAt": "2013-02-20T16:00:15.701Z",
+        "name": "Sci-Fi",
+        "slug": "sci-fi",
+        "description": null
+      }
+    },
+    {
+      "id": "6",
+      "type": "genres",
+      "links": {
+        "self": "https://kitsu.io/api/edge/genres/6"
+      },
+      "attributes": {
+        "createdAt": "2013-02-20T16:00:15.716Z",
+        "updatedAt": "2013-02-20T16:00:15.716Z",
+        "name": "Space",
+        "slug": "space",
+        "description": null
+      }
+    }
+  ],
+  "meta": {
+    "count": 6
+  },
+  "links": {
+    "first": "https://kitsu.io/api/edge/anime/1/genres?page%5Blimit%5D=10&page%5Boffset%5D=0",
+    "last": "https://kitsu.io/api/edge/anime/1/genres?page%5Blimit%5D=10&page%5Boffset%5D=0"
+  }
+}

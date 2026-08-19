@@ -20,6 +20,9 @@ type EnvVars struct {
 	Timeout  int
 
 	TvDir string
+
+	KitsuBaseURL string
+	KitsuToken   string
 }
 
 func GetEnv() *EnvVars {
@@ -37,6 +40,8 @@ func GetEnv() *EnvVars {
 		LogLevel:      EnvString("LOG_LEVEL", "debug"),
 		Timeout:       EnvInt("TIMEOUT", 30),
 		TvDir:         EnvString("TV_DIR", "/mnt/Thicc32/tv"),
+		KitsuBaseURL:  EnvString("KitsuBaseURL", "kitsu.io"),
+		// KitsuToken:    EnvString("KitsuToken", ""),
 	}
 }
 
