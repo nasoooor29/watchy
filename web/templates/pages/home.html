@@ -102,12 +102,14 @@
           <sl-badge>{{ .Selected.EpisodeCount }} episodes</sl-badge>
         </div>
 
+        {{ if .Selected.Season.Episodes }}
         <sl-details open summary="{{ .Selected.Season.Name }}">
           <div class="episode-list">
             {{ range .Selected.Season.Episodes }} {{ template "episode-row" . }}
             {{ end }}
           </div>
         </sl-details>
+        {{ end }}
       </sl-card>
     </div>
   </div>

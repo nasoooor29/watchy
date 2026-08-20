@@ -1,56 +1,30 @@
 package server
 
 import (
-	"backend/db"
-	"backend/models"
-	"encoding/json"
 	"log/slog"
 	"net/http"
-	"os"
-	"path/filepath"
+	"strconv"
 )
 
-func (s *Server) ShowsPage(w http.ResponseWriter, r *http.Request) {
-	dirs, err := os.ReadDir(s.env.TvDir)
+func (s *Server) GetPoster(w http.ResponseWriter, r *http.Request) {
+	id, err := strconv.ParseInt(r.PathValue("id"), 10, 64)
+	if err != nil || id < 0 {
+		http.NotFound(w, r)
+		return
+	}
+
+	show, err := s.DB.GetShow(id)
 	if err != nil {
-		slog.Error("", "err", err)
-		http.Error(w, http.StatusText(500), 500)
+		slog.Error("failed to get show", "id", id, "err", err)
+		http.NotFound(w, r)
 		return
 	}
-	slog.Info("shows page", "dirs", len(dirs))
-	shows := []db.Show{}
-	withMD := 0
-	for _, dir := range dirs {
-		if !dir.IsDir() {
-			continue
-		}
 
-		show, err := s.Indexer.IndexShow(filepath.Join(s.env.TvDir, dir.Name()))
-		if err != nil {
-			slog.Error("Failed to get metadata for show", "show", dir.Name(), "err", err)
-			continue
-		}
-		shows = append(shows, *show)
-	}
-	// print the number of the shows that have metadata.json file
-	slog.Info("shows page", "shows with metadata", withMD)
-	s.render(w, r, http.StatusOK, "home.html", map[string]any{
-		"TotalSeries": 5,
-		"Shows":       shows,
-	})
-}
-
-func (s *Server) GetShowCover(w http.ResponseWriter, r *http.Request) {
-	coverPath := filepath.Join(s.env.TvDir, r.PathValue("ShowName"), "cover.jpg")
-
-	if _, err := os.Stat(coverPath); err != nil {
-		slog.Error("Failed to get cover for show", "show", r.PathValue("ShowName"), "err", err)
-		http.Error(w, http.StatusText(404), 404)
+	if len(show.Poster) == 0 {
+		http.NotFound(w, r)
 		return
 	}
-	// set the content type to image/jpeg
+
 	w.Header().Set("Content-Type", "image/jpeg")
-
-	// serve the cover.jpg file
-	http.ServeFile(w, r, coverPath)
+	w.Write(show.Poster)
 }

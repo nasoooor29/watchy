@@ -1,78 +1,34 @@
 package web
 
-// func BuildLibraryPage(database *db.SQL) (models.LibraryPage, error) {
-// 	dbShows, err := database.GetAllShows()
-// 	if err != nil {
-// 		return models.LibraryPage{}, err
-// 	}
-//
-// 	var libShows []models.LibraryShow
-// 	for _, s := range dbShows {
-// 		libShows = append(libShows, models.LibraryShow{
-// 			Title: s.Title,
-// 			Image: "/api/poster/" + fmt.Sprint(s.Id),
-// 		})
-// 	}
-//
-// 	return models.LibraryPage{
-// 		TotalSeries: len(libShows),
-// 		Shows:       libShows,
-// 	}, nil
-// }
+import (
+	"backend/db"
+	"backend/models"
+	"fmt"
+)
 
-// func DummyLibraryPage() models.LibraryPage {
-// 	shows := []models.LibraryShow{
-// 		{Title: "Honzuki no Gekokujou Shisho ni Naru Tame ni wa Shudan wo...", Year: 2026, Score: 7.98, Progress: "54/55 watched", Percent: 98, Image: "https://images.unsplash.com/photo-1515879218367-8466d910aaa4?auto=format&fit=crop&w=180&q=80"},
-// 		{Title: "Nige Jouzu no Wakagimi", Year: 2024, Score: 7.78, Progress: "13/18 watched", Percent: 72},
-// 		{Title: "Buchigire Reijou wa Houfuku wo Chikaimashita", Year: 2026, Score: 7.08, Progress: "0/0 watched", Percent: 0},
-// 		{Title: "Ryoumin 0-nin Start no Henkyou Ryoushu-sama", Year: 2026, Score: 7.04, Progress: "7/7 watched", Percent: 100},
-// 		{Title: "Tensei shitara Slime Datta Ken", Year: 2018, Score: 8.13, Progress: "95/95 watched", Percent: 100},
-// 		{Title: "Koko wa Ore ni Makasete Saki ni Ike", Year: 2026, Score: 6.78, Progress: "7/7 watched", Percent: 100},
-// 		{Title: "Hell Mode: Yarikomizuki no Gamer", Year: 2026, Score: 7.2, Progress: "30/30 watched", Percent: 100},
-// 		{Title: "Otome Kaijuu Carameliser", Year: 2026, Score: 7.67, Progress: "7/7 watched", Percent: 100},
-// 		{Title: "Sousou no Frieren", Year: 2023, Score: 9.12, Progress: "28/28 watched", Percent: 100},
-// 		{Title: "Kusuriya no Hitorigoto", Year: 2023, Score: 8.84, Progress: "24/24 watched", Percent: 100},
-// 		{Title: "Dungeon Meshi", Year: 2024, Score: 8.66, Progress: "19/24 watched", Percent: 79},
-// 		{Title: "Dandadan", Year: 2024, Score: 8.58, Progress: "12/12 watched", Percent: 100},
-// 		{Title: "Kaijuu 8-gou", Year: 2024, Score: 8.21, Progress: "9/12 watched", Percent: 75},
-// 		{Title: "Boku no Hero Academia", Year: 2016, Score: 7.89, Progress: "146/159 watched", Percent: 92},
-// 		{Title: "Shangri-La Frontier", Year: 2023, Score: 8.09, Progress: "40/50 watched", Percent: 80},
-// 		{Title: "Re:Zero kara Hajimeru Isekai Seikatsu", Year: 2016, Score: 8.25, Progress: "50/66 watched", Percent: 76},
-// 	}
-//
-// 	return models.LibraryPage{
-// 		TotalSeries: 177,
-// 		Shows:       shows,
-// 		Selected: models.ShowDetail{
-// 			Title:        "Honzuki no Gekokujou Shisho ni Naru Tame ni wa Shudan wo Erandeiraremasen",
-// 			Alternative:  "Ascendance of a Bookworm: Adopted Daughter of an Archduke",
-// 			Image:        shows[0].Image,
-// 			Tags:         []string{"TV", "Currently Airing", "Spring 2026", "Score 7.98", "Wit Studio", "Fantasy"},
-// 			Progress:     "54/55 watched",
-// 			Percent:      98,
-// 			Synopsis:     "Anime adaptation of part three of the Honzuki no Gekokujou light novel.",
-// 			Japanese:     "本好きの下剋上 ～司書になるためには手段を選んでいられません～",
-// 			EpisodeCount: 55,
-// 			Season:       models.Season{Name: "Season 04", Episodes: dummyEpisodes()},
-// 		},
-// 		Stats: []models.LibraryStat{{Label: "Watching", Value: "0"}, {Label: "Missing eps", Value: "0"}, {Label: "Missing seasons", Value: "0"}, {Label: "MAL eps", Value: "-"}},
-// 	}
-// }
-//
-// func dummySources() []models.EpisodeSource {
-// 	return []models.EpisodeSource{{Label: "1080p · WEBRip · HEVC · AAC"}, {Label: "1080p · WEB-DL · AVC · AAC"}}
-// }
-//
-// func dummyEpisodes() []models.LibraryEpisode {
-// 	episodes := make([]models.LibraryEpisode, 55)
-// 	for i := range episodes {
-// 		number := 18 - i
-// 		episodes[i] = models.LibraryEpisode{
-// 			Name:    fmt.Sprintf("E%02d - Honzuki No Gekokujou S4", number),
-// 			Watched: number < 18,
-// 			Sources: dummySources(),
-// 		}
-// 	}
-// 	return episodes
-// }
-//
+func BuildLibraryPage(database *db.SQL) (models.LibraryPage, error) {
+	dbShows, err := database.GetAllShows()
+	if err != nil {
+		return models.LibraryPage{}, err
+	}
+
+	var libShows []models.LibraryShow
+	for _, s := range dbShows {
+		libShows = append(libShows, models.LibraryShow{
+			Title: s.Title,
+			Image: "/api/poster/" + fmt.Sprint(s.Id),
+		})
+	}
+
+	selected := models.ShowDetail{}
+	if len(dbShows) > 0 {
+		selected.Title = dbShows[0].Title
+		selected.Image = "/api/poster/" + fmt.Sprint(dbShows[0].Id)
+	}
+
+	return models.LibraryPage{
+		TotalSeries: len(libShows),
+		Shows:       libShows,
+		Selected:    selected,
+	}, nil
+}

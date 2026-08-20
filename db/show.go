@@ -20,6 +20,10 @@ func (q *SQL) GetShowByPath(path string) (*Show, error) {
 	return Get[Show](q.db, "SELECT * FROM shows WHERE path = ?", path)
 }
 
+func (q *SQL) GetAllShows() ([]Show, error) {
+	return GetAll[Show](q.db, "SELECT * FROM shows")
+}
+
 func (q *SQL) CreateShow(poster []byte, path, title string, malId int) (*Show, error) {
 	result, err := q.db.Exec(
 		"INSERT INTO shows (poster, path, title, mal_id) VALUES (?, ?, ?, ?)",

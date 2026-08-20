@@ -3,7 +3,6 @@ package source
 import (
 	"backend/models"
 	"encoding/json"
-	"fmt"
 	"net/http"
 	"net/url"
 	"time"
@@ -40,12 +39,12 @@ func (k *KitsuSource) FetchDetails(title string) (*models.ShowDetail, error) {
 	if err != nil {
 		return nil, err
 	}
+	defer resp.Body.Close()
 	details := kitsuDetails{}
 	err = json.NewDecoder(resp.Body).Decode(&details)
 	if err != nil {
 		return nil, err
 	}
-	fmt.Printf("details: %v\n", details)
 	if len(details.Data) < 1 {
 		return nil, models.ErrInternalServerError
 	}
@@ -72,6 +71,7 @@ func (k *KitsuSource) fetchGenres(u string) ([]string, error) {
 	if err != nil {
 		return nil, err
 	}
+	defer resp.Body.Close()
 	details := kitsuGenres{}
 	err = json.NewDecoder(resp.Body).Decode(&details)
 	if err != nil {

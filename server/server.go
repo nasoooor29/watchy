@@ -26,8 +26,17 @@ func (s *Server) RegisterRoutes() http.Handler {
 			s.render(w, r, http.StatusNotFound, "404.html")
 			return
 		}
-		s.render(w, r, http.StatusOK, "home.html", web.DummyLibraryPage())
+
+		page, err := web.BuildLibraryPage(s.DB)
+		if err != nil {
+			slog.Error("failed to build library page", "err", err)
+			http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+			return
+		}
+		s.render(w, r, http.StatusOK, "home.html", page)
 	})
+
+	mux.HandleFunc("GET /api/poster/{id}", s.GetPoster)
 
 	mux.HandleFunc("GET /login", s.RenderPageHandler("login.html"))
 	mux.HandleFunc("POST /login", s.login)
@@ -70,6 +79,12 @@ func StartServer() {
 	}
 
 	slog.Info("server started", "host", env.Host, "port", env.Port)
+
+	go func() {
+		if err := server.Indexer.IndexShows(); err != nil {
+			slog.Error("failed to index shows", "err", err)
+		}
+	}()
 
 	cleanUpTicker := time.NewTicker(30 * time.Minute)
 	defer cleanUpTicker.Stop()
