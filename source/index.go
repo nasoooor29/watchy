@@ -62,21 +62,26 @@ func (i *Indexer) IndexShows() error {
 		}
 		detail, err := sources.GetMetadata(show)
 		if err != nil {
-			return err
+			slog.Error("failed to fetch metadata", "show", show, "err", err)
+			continue
 		}
 
 		resp, err := client.Get(detail.Image)
 		if err != nil {
-			return err
+			slog.Error("failed to fetch poster", "show", show, "err", err)
+			continue
 		}
 
 		poster, err := io.ReadAll(resp.Body)
+		resp.Body.Close()
 		if err != nil {
-			return err
+			slog.Error("failed to read poster", "show", show, "err", err)
+			continue
 		}
 		_, err = i.db.CreateShow(poster, filepath.Join(i.env.TvDir, show), detail.Title, 0)
 		if err != nil {
-			return err
+			slog.Error("failed to insert show", "show", show, "err", err)
+			continue
 		}
 
 	}

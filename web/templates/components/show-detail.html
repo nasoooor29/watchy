@@ -86,24 +86,26 @@
   </style>
   <div class="show-detail-top">
     <div class="show-detail-cover">
-      <img
-        src="http://localhost:3000/api/series-cover?name=Honzuki%20no%20Gekokujou%20Shisho%20ni%20Naru%20Tame%20ni%20wa%20Shudan%20wo%20Erandeiraremasen"
+      {{ if .Image }}<img
+        src="{{ .Image }}"
         alt="{{ .Title }} cover"
-      />
+      />{{ end }}
     </div>
     <div class="show-detail-copy">
       <p class="show-detail-eyebrow">Now watching</p>
       <h1 class="show-detail-title">{{ .Title }}</h1>
-      <p class="subtle">{{ .Alternative }}</p>
+      {{ if .Alternative }}<p class="subtle">{{ .Alternative }}</p>{{ end }}
       <div class="show-detail-tags">
         {{ range .Tags }}
         <sl-tag size="small">{{ . }}</sl-tag>
         {{ end }}
       </div>
+      {{ if .Synopsis }}
       <div class="show-detail-body">
         <h2>Synopsis</h2>
         <p class="show-detail-synopsis">{{ .Synopsis }}</p>
       </div>
+      {{ end }}
       <div class="show-detail-actions">
         <sl-button variant="primary">Continue watching</sl-button>
         <sl-button>

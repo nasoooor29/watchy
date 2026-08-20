@@ -61,18 +61,18 @@
   <div class="library-card-content">
     <div class="library-card-cover">
       <img
-        src="http://localhost:3000/api/series-cover?name=Honzuki%20no%20Gekokujou%20Shisho%20ni%20Naru%20Tame%20ni%20wa%20Shudan%20wo%20Erandeiraremasen"
+        src="{{ .Image }}"
         alt="{{ .Title }} cover"
         loading="lazy"
       />
     </div>
     <div class="library-card-info">
       <div class="library-card-badges">
-        <sl-badge variant="warning">{{ printf "%.2f" .Score }}</sl-badge>
-        <sl-badge variant="primary">{{ .Progress }}</sl-badge>
+        {{ if gt .Score 0.0 }}<sl-badge variant="warning">{{ printf "%.2f" .Score }}</sl-badge>{{ end }}
+        {{ if .Progress }}<sl-badge variant="primary">{{ .Progress }}</sl-badge>{{ end }}
       </div>
       <h2 class="library-card-title">{{ .Title }}</h2>
-      <p class="library-card-meta">{{ .Year }}</p>
+      {{ if .Year }}<p class="library-card-meta">{{ .Year }}</p>{{ end }}
     </div>
   </div>
 </sl-card>
