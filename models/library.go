@@ -8,6 +8,7 @@ type LibraryPage struct {
 }
 
 type LibraryShow struct {
+	ID       int64
 	Title    string
 	Year     int
 	Score    float64

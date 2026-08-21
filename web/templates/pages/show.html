@@ -1,0 +1,22 @@
+{{ define "title" }}{{ .Title }} · Watchy{{ end }} {{ define "content" }}
+<style>
+  .library-content {
+    display: flex;
+    min-width: 0;
+    flex-direction: column;
+    gap: 1rem;
+  }
+  @media (min-width: 1100px) {
+    .library-content {
+      max-width: 72rem;
+      margin: 0 auto;
+      width: 100%;
+      overflow-y: auto;
+      padding-right: 0.125rem;
+    }
+  }
+</style>
+<div class="library-content" id="show-panel">
+  {{ template "show-panel" . }}
+</div>
+{{ end }}
