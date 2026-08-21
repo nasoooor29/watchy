@@ -20,6 +20,7 @@ type LibraryShow struct {
 type LibraryEpisode struct {
 	Name    string
 	Watched bool
+	ID      int
 	Sources []EpisodeSource
 }
 
@@ -55,5 +56,6 @@ type Season struct {
 }
 
 type EpisodeSource struct {
+	Path  string
 	Label string
 }

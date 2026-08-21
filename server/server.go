@@ -6,8 +6,15 @@ import (
 	"backend/source"
 	"backend/web"
 	"fmt"
+	"io"
 	"log/slog"
 	"net/http"
+	"net/url"
+	"os"
+	"path"
+	"path/filepath"
+	"strconv"
+	"strings"
 	"time"
 
 	"github.com/go-playground/validator/v10"
@@ -36,10 +43,10 @@ func (s *Server) RegisterRoutes() http.Handler {
 		s.render(w, r, http.StatusOK, "home.html", page)
 	})
 
-	mux.Handle("GET /stream/", http.StripPrefix("/stream/", http.FileServer(http.Dir(s.env.TvDir))))
 	mux.HandleFunc("GET /api/poster/{id}", s.GetPoster)
 	mux.HandleFunc("GET /shows/{id}", s.GetShowPage)
 	mux.HandleFunc("GET /shows/{id}/season/{season}", s.GetShowSeason)
+	mux.HandleFunc("GET /shows/{id}/stream/{fname...}", s.StreamShow)
 
 	mux.HandleFunc("GET /login", s.RenderPageHandler("login.html"))
 	mux.HandleFunc("POST /login", s.login)
@@ -50,6 +57,56 @@ func (s *Server) RegisterRoutes() http.Handler {
 	mux.Handle("GET /me", mw.Auth(http.HandlerFunc(s.mePage)))
 	mux.Handle("POST /logout", mw.Auth(http.HandlerFunc(s.logout)))
 	return stack(mux)
+}
+
+func (s *Server) StreamShow(w http.ResponseWriter, r *http.Request) {
+	id := r.PathValue("id")
+	rawFname := r.PathValue("fname")
+
+	fname, err := url.PathUnescape(rawFname)
+	if err != nil {
+		http.Error(w, "invalid path encoding", http.StatusBadRequest)
+		return
+	}
+
+	sid, err := strconv.ParseInt(id, 10, 64)
+	if err != nil {
+		models.ErrInvalidRequest.SendError(w)
+		return
+	}
+
+	show, err := s.DB.GetShow(sid)
+	if err != nil {
+		http.Error(w, "show not found", http.StatusNotFound)
+		return
+	}
+
+	showFS := os.DirFS(show.Path)
+
+	cleanPath := path.Clean(filepath.ToSlash(fname))
+	cleanPath = strings.TrimPrefix(cleanPath, "/")
+
+	file, err := showFS.Open(cleanPath)
+	if err != nil {
+		http.Error(w, "file not found", http.StatusNotFound)
+		return
+	}
+	defer file.Close()
+
+	stat, err := file.Stat()
+	if err != nil || stat.IsDir() {
+		http.Error(w, "invalid file", http.StatusNotFound)
+		return
+	}
+
+	// 4. Assert ReadSeeker for byte-range support in mpv
+	seeker, ok := file.(io.ReadSeeker)
+	if !ok {
+		http.Error(w, "seek not supported", http.StatusInternalServerError)
+		return
+	}
+
+	http.ServeContent(w, r, stat.Name(), stat.ModTime(), seeker)
 }
 
 type Server struct {

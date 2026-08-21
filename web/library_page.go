@@ -35,8 +35,8 @@ func BuildLibraryPage(database *db.SQL) (models.LibraryPage, error) {
 	if err != nil {
 		return models.LibraryPage{}, err
 	}
-	page.Selected = selected
 
+	page.Selected = selected
 	return page, nil
 }
 
@@ -72,7 +72,7 @@ func BuildShowDetail(database *db.SQL, id int64, seasonIndex int) (models.ShowDe
 		})
 	}
 
-	eps, err := utils.GetShowEpisodes(seasons[seasonIndex], show.Path)
+	eps, err := utils.GetShowEpisodes(seasons[seasonIndex], show.Path, int(show.ID))
 	if err != nil {
 		return models.ShowDetail{}, err
 	}
