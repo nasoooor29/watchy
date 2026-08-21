@@ -36,6 +36,7 @@ func (s *Server) RegisterRoutes() http.Handler {
 		s.render(w, r, http.StatusOK, "home.html", page)
 	})
 
+	mux.Handle("GET /stream/", http.StripPrefix("/stream/", http.FileServer(http.Dir(s.env.TvDir))))
 	mux.HandleFunc("GET /api/poster/{id}", s.GetPoster)
 	mux.HandleFunc("GET /shows/{id}", s.GetShowPage)
 	mux.HandleFunc("GET /shows/{id}/season/{season}", s.GetShowSeason)
