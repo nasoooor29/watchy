@@ -15,7 +15,7 @@ func (s *Server) GetShowPage(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	detail, err := web.BuildShowDetail(s.DB, id)
+	detail, err := web.BuildShowDetail(s.DB, id, 0)
 	if err != nil {
 		slog.Error("failed to build show detail", "id", id, "err", err)
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
@@ -38,7 +38,7 @@ func (s *Server) GetShowSeason(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	detail, err := web.BuildShowSeasonDetail(s.DB, id, seasonIndex)
+	detail, err := web.BuildShowDetail(s.DB, id, seasonIndex)
 	if err != nil {
 		slog.Error("failed to build show season", "id", id, "season", seasonIndex, "err", err)
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)

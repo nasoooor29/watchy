@@ -6,6 +6,7 @@ import (
 	"log/slog"
 	"os"
 	"path/filepath"
+	"slices"
 	"strconv"
 	"strings"
 
@@ -41,31 +42,40 @@ func GetShowEpisodes(season, path string) ([]models.LibraryEpisode, error) {
 	sourcesMap := make(map[int][]models.EpisodeSource)
 
 	for _, entry := range entries {
+		if entry.IsDir() {
+			continue
+		}
 
 		name := entry.Name()
 		ele := anitogo.Parse(name, anitogo.DefaultOptions)
 		if len(ele.EpisodeNumber) == 0 {
-			slog.Warn("no episode number detected, skipping", "dir", name)
+			slog.Warn("no episode number detected, skipping", "file", name)
 			continue
 		}
 
 		epNum, err := strconv.Atoi(ele.EpisodeNumber[0])
 		if err != nil {
-			slog.Warn("failed to parse episode number string", "dir", name, "val", ele.EpisodeNumber[0], "err", err)
+			slog.Warn("failed to parse episode number string", "file", name, "val", ele.EpisodeNumber[0], "err", err)
 			continue
 		}
 
 		sourcesMap[epNum] = append(sourcesMap[epNum], models.EpisodeSource{
-			Label: entry.Name(),
+			Label: name,
 		})
 	}
 
-	var episodes []models.LibraryEpisode
-	for epNum, sources := range sourcesMap {
+	keys := make([]int, 0, len(sourcesMap))
+	for k := range sourcesMap {
+		keys = append(keys, k)
+	}
+	slices.Sort(keys)
+
+	episodes := make([]models.LibraryEpisode, 0, len(keys))
+	for _, epNum := range keys {
 		episodes = append(episodes, models.LibraryEpisode{
 			Name:    fmt.Sprintf("Episode %d", epNum),
 			Watched: false,
-			Sources: sources,
+			Sources: sourcesMap[epNum],
 		})
 	}
 

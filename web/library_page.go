@@ -13,7 +13,7 @@ func BuildLibraryPage(database *db.SQL) (models.LibraryPage, error) {
 		return models.LibraryPage{}, err
 	}
 
-	libShows := make([]models.LibraryShow, 0, len(dbShows))
+	libShows := []models.LibraryShow{}
 	for _, s := range dbShows {
 		libShows = append(libShows, models.LibraryShow{
 			ID:    s.ID,
@@ -31,7 +31,7 @@ func BuildLibraryPage(database *db.SQL) (models.LibraryPage, error) {
 		return page, nil
 	}
 
-	selected, err := BuildShowDetail(database, dbShows[0].ID)
+	selected, err := BuildShowDetail(database, dbShows[0].ID, 0)
 	if err != nil {
 		return models.LibraryPage{}, err
 	}
@@ -40,15 +40,7 @@ func BuildLibraryPage(database *db.SQL) (models.LibraryPage, error) {
 	return page, nil
 }
 
-func BuildShowDetail(database *db.SQL, id int64) (models.ShowDetail, error) {
-	return buildShowDetail(database, id, 0)
-}
-
-func BuildShowSeasonDetail(database *db.SQL, id int64, seasonIndex int) (models.ShowDetail, error) {
-	return buildShowDetail(database, id, seasonIndex)
-}
-
-func buildShowDetail(database *db.SQL, id int64, seasonIndex int) (models.ShowDetail, error) {
+func BuildShowDetail(database *db.SQL, id int64, seasonIndex int) (models.ShowDetail, error) {
 	show, err := database.GetShow(id)
 	if err != nil {
 		return models.ShowDetail{}, err
