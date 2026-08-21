@@ -3,6 +3,7 @@ package web
 import (
 	"backend/db"
 	"backend/models"
+	"backend/utils"
 	"fmt"
 )
 
@@ -21,10 +22,17 @@ func BuildLibraryPage(database *db.SQL) (models.LibraryPage, error) {
 	}
 
 	selected := models.ShowDetail{}
-	if len(dbShows) > 0 {
-		selected.Title = dbShows[0].Title
-		selected.Image = "/api/poster/" + fmt.Sprint(dbShows[0].Id)
+	if len(dbShows) < 1 {
+		return models.LibraryPage{}, nil
 	}
+	selected.Title = dbShows[0].Title
+	selected.Image = "/api/poster/" + fmt.Sprint(dbShows[0].Id)
+	seasons, err := utils.GetShowSeasons(dbShows[0].Path)
+	if err != nil {
+		return models.LibraryPage{}, err
+	}
+	eps, err := utils.GetShowEpisodes(seasons[0], dbShows[0].Path)
+	selected.Season.Episodes = eps
 
 	return models.LibraryPage{
 		TotalSeries: len(libShows),
