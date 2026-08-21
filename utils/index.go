@@ -30,7 +30,7 @@ func GetShowSeasons(path string) ([]string, error) {
 	return seasons, nil
 }
 
-func GetShowEpisodes(season, path string) ([]models.LibraryEpisode, error) {
+func GetShowEpisodes(season, path string, id int) ([]models.LibraryEpisode, error) {
 	seasonPath := filepath.Join(path, season)
 	slog.Debug("reading season directory", "path", seasonPath)
 
@@ -61,6 +61,7 @@ func GetShowEpisodes(season, path string) ([]models.LibraryEpisode, error) {
 
 		sourcesMap[epNum] = append(sourcesMap[epNum], models.EpisodeSource{
 			Label: name,
+			Path:  filepath.Join(season, name),
 		})
 	}
 
@@ -73,6 +74,7 @@ func GetShowEpisodes(season, path string) ([]models.LibraryEpisode, error) {
 	episodes := make([]models.LibraryEpisode, 0, len(keys))
 	for _, epNum := range keys {
 		episodes = append(episodes, models.LibraryEpisode{
+			ID:      id,
 			Name:    fmt.Sprintf("Episode %d", epNum),
 			Watched: false,
 			Sources: sourcesMap[epNum],

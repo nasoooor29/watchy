@@ -32,7 +32,7 @@
   </div>
   <div class="episode-sources">
     {{ range .Sources }}
-    <sl-button size="small">
+    <sl-button size="small" href="mpv://http://localhost:8080/shows/{{ $.ID }}/stream/{{ .Path }}">
       <sl-icon name="play-fill" slot="prefix"></sl-icon>
       {{ .Label }}
     </sl-button>
