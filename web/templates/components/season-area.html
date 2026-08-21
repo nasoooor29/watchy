@@ -1,0 +1,53 @@
+{{ define "season-area" }}
+<style>
+  .season-picker {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    margin-bottom: 0.75rem;
+  }
+  .season-tab {
+    border: 1px solid var(--sl-color-neutral-600);
+    border-radius: var(--sl-border-radius-medium);
+    background: transparent;
+    color: var(--sl-color-neutral-400);
+    font-size: 0.8125rem;
+    padding: 0.3rem 0.75rem;
+    cursor: pointer;
+  }
+  .season-tab:hover {
+    color: var(--ctp-text);
+    border-color: var(--ctp-mauve);
+  }
+  .season-tab.active {
+    background: var(--ctp-mauve);
+    border-color: var(--ctp-mauve);
+    color: var(--ctp-base);
+    font-weight: 600;
+  }
+  .episode-list {
+    display: grid;
+    gap: 0.5rem;
+  }
+</style>
+{{ if gt (len .Seasons) 1 }}
+<div class="season-picker">
+  {{ range .Seasons }}
+  <button
+    class="season-tab{{ if .Current }} active{{ end }}"
+    hx-get="/shows/{{ $.ID }}/season/{{ .Index }}"
+    hx-target="#season-area"
+    hx-swap="innerHTML"
+  >
+    {{ .Name }}
+  </button>
+  {{ end }}
+</div>
+{{ end }} {{ if .Season.Episodes }}
+<sl-details open summary="{{ .Season.Name }}">
+  <div class="episode-list">
+    {{ range .Season.Episodes }} {{ template "episode-row" . }} {{ end }}
+  </div>
+</sl-details>
+{{ end }}
+{{ end }}

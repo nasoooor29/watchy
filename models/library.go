@@ -24,6 +24,7 @@ type LibraryEpisode struct {
 }
 
 type ShowDetail struct {
+	ID           int64
 	Title        string
 	Alternative  string
 	Image        string
@@ -33,7 +34,14 @@ type ShowDetail struct {
 	Synopsis     string
 	Japanese     string
 	EpisodeCount int
+	Seasons      []SeasonOption
 	Season       Season
+}
+
+type SeasonOption struct {
+	Index   int
+	Name    string
+	Current bool
 }
 
 type LibraryStat struct {
