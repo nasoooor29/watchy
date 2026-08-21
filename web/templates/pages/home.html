@@ -15,18 +15,8 @@
     flex-direction: column;
     gap: 1rem;
   }
-  .library-header::part(body),
-  .episodes::part(body) {
+  .library-header::part(body) {
     padding: 1rem;
-  }
-  .section-heading {
-    display: flex;
-    gap: 0.75rem;
-  }
-  .section-heading {
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 1rem;
   }
   .library-page h1,
   .library-page h2,
@@ -55,10 +45,6 @@
     gap: 0.5rem;
     overflow-y: auto;
     padding-right: 0.125rem;
-  }
-  .episode-list {
-    display: grid;
-    gap: 0.5rem;
   }
   @media (min-width: 1100px) {
     .library-layout {
@@ -89,28 +75,8 @@
       </div>
     </aside>
 
-    <div class="library-content">
-      <div>{{ template "show-detail" .Selected }}</div>
-
-      <sl-card class="episodes">
-        <div class="section-heading">
-          <div>
-            <h2>Seasons &amp; episodes</h2>
-            <p class="subtle">Pick an available release to start watching.</p>
-          </div>
-
-          <sl-badge>{{ .Selected.EpisodeCount }} episodes</sl-badge>
-        </div>
-
-        {{ if .Selected.Season.Episodes }}
-        <sl-details open summary="{{ .Selected.Season.Name }}">
-          <div class="episode-list">
-            {{ range .Selected.Season.Episodes }} {{ template "episode-row" . }}
-            {{ end }}
-          </div>
-        </sl-details>
-        {{ end }}
-      </sl-card>
+    <div class="library-content" id="show-panel">
+      {{ template "show-panel" .Selected }}
     </div>
   </div>
 </div>

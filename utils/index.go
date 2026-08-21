@@ -41,10 +41,6 @@ func GetShowEpisodes(season, path string) ([]models.LibraryEpisode, error) {
 	sourcesMap := make(map[int][]models.EpisodeSource)
 
 	for _, entry := range entries {
-		if !entry.IsDir() {
-			slog.Error("failed to read season directory", "path", seasonPath, "err", err)
-			continue
-		}
 
 		name := entry.Name()
 		ele := anitogo.Parse(name, anitogo.DefaultOptions)

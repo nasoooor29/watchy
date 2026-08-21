@@ -1,7 +1,7 @@
 package db
 
 type Show struct {
-	Id     int64  `db:"id"`
+	ID     int64  `db:"id"`
 	Poster []byte `db:"poster"`
 	Path   string `db:"path"`
 	Title  string `db:"title"`

@@ -1,8 +1,14 @@
 {{ define "library-card" }}
-<sl-card class="library-card">
+<sl-card
+  class="library-card"
+  hx-get="/shows/{{ .Id }}"
+  hx-target="#show-panel"
+  hx-swap="innerHTML"
+>
   <style>
     .library-card {
       height: 10.25rem;
+      cursor: pointer;
     }
     .library-card::part(base) {
       height: 100%;
