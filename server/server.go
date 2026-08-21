@@ -38,6 +38,7 @@ func (s *Server) RegisterRoutes() http.Handler {
 
 	mux.HandleFunc("GET /api/poster/{id}", s.GetPoster)
 	mux.HandleFunc("GET /shows/{id}", s.GetShowPage)
+	mux.HandleFunc("GET /shows/{id}/season/{season}", s.GetShowSeason)
 
 	mux.HandleFunc("GET /login", s.RenderPageHandler("login.html"))
 	mux.HandleFunc("POST /login", s.login)

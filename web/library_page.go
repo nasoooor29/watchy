@@ -41,12 +41,21 @@ func BuildLibraryPage(database *db.SQL) (models.LibraryPage, error) {
 }
 
 func BuildShowDetail(database *db.SQL, id int64) (models.ShowDetail, error) {
+	return buildShowDetail(database, id, 0)
+}
+
+func BuildShowSeasonDetail(database *db.SQL, id int64, seasonIndex int) (models.ShowDetail, error) {
+	return buildShowDetail(database, id, seasonIndex)
+}
+
+func buildShowDetail(database *db.SQL, id int64, seasonIndex int) (models.ShowDetail, error) {
 	show, err := database.GetShow(id)
 	if err != nil {
 		return models.ShowDetail{}, err
 	}
 
 	detail := models.ShowDetail{
+		ID:    show.ID,
 		Title: show.Title,
 		Image: "/api/poster/" + fmt.Sprint(show.ID),
 	}
@@ -59,11 +68,23 @@ func BuildShowDetail(database *db.SQL, id int64) (models.ShowDetail, error) {
 		return detail, nil
 	}
 
-	eps, err := utils.GetShowEpisodes(seasons[0], show.Path)
+	if seasonIndex < 0 || seasonIndex >= len(seasons) {
+		seasonIndex = 0
+	}
+
+	for i, name := range seasons {
+		detail.Seasons = append(detail.Seasons, models.SeasonOption{
+			Index:   i,
+			Name:    name,
+			Current: i == seasonIndex,
+		})
+	}
+
+	eps, err := utils.GetShowEpisodes(seasons[seasonIndex], show.Path)
 	if err != nil {
 		return models.ShowDetail{}, err
 	}
-	detail.Season.Name = seasons[0]
+	detail.Season.Name = seasons[seasonIndex]
 	detail.Season.Episodes = eps
 	detail.EpisodeCount = len(eps)
 

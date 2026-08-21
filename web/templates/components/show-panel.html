@@ -23,10 +23,6 @@
     color: var(--sl-color-neutral-400);
     font-size: 0.875rem;
   }
-  .episode-list {
-    display: grid;
-    gap: 0.5rem;
-  }
 </style>
 <div>{{ template "show-detail" . }}</div>
 
@@ -39,12 +35,9 @@
 
     <sl-badge>{{ .EpisodeCount }} episodes</sl-badge>
   </div>
-  {{ if .Season.Episodes }}
-  <sl-details open summary="{{ .Season.Name }}">
-    <div class="episode-list">
-      {{ range .Season.Episodes }} {{ template "episode-row" . }} {{ end }}
-    </div>
-  </sl-details>
-  {{ end }}
+
+  <div id="season-area">
+    {{ template "season-area" . }}
+  </div>
 </sl-card>
 {{ end }}
