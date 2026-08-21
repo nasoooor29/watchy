@@ -57,6 +57,7 @@ var (
 )
 
 var (
-	ErrHidden                = fmt.Errorf("Dir Is Hidden")
-	ErrFailedToFetchMetaData = fmt.Errorf("Failed to fetch metadata")
+	ErrHidden                   = fmt.Errorf("Dir Is Hidden")
+	ErrFailedToFetchMetaData    = fmt.Errorf("Failed to fetch metadata")
+	ErrFailedToBuildShowDetails = fmt.Errorf("Failed to build show details")
 )

@@ -30,24 +30,16 @@
     gap: 0.5rem;
   }
 </style>
-{{ if gt (len .Seasons) 1 }}
-<div class="season-picker">
-  {{ range .Seasons }}
-  <button
-    class="season-tab{{ if .Current }} active{{ end }}"
-    hx-get="/shows/{{ $.ID }}/season/{{ .Index }}"
-    hx-target="#season-area"
-    hx-swap="innerHTML"
-  >
-    {{ .Name }}
-  </button>
+{{ range .Seasons }}
+  {{ if .Episodes }}
+  <sl-details open summary="{{ .Name }}">
+    <div class="episode-list">
+      {{ range .Episodes }}
+        {{ template "episode-row" . }}
+      {{ end }}
+    </div>
+  </sl-details>
   {{ end }}
-</div>
-{{ end }} {{ if .Season.Episodes }}
-<sl-details open summary="{{ .Season.Name }}">
-  <div class="episode-list">
-    {{ range .Season.Episodes }} {{ template "episode-row" . }} {{ end }}
-  </div>
-</sl-details>
 {{ end }}
+
 {{ end }}

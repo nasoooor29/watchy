@@ -34,7 +34,7 @@ func (s *Server) RegisterRoutes() http.Handler {
 			return
 		}
 
-		page, err := web.BuildLibraryPage(s.DB)
+		page, err := buildLibraryPage(s.DB)
 		if err != nil {
 			slog.Error("failed to build library page", "err", err)
 			http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
@@ -44,8 +44,9 @@ func (s *Server) RegisterRoutes() http.Handler {
 	})
 
 	mux.HandleFunc("GET /api/poster/{id}", s.GetPoster)
-	mux.HandleFunc("GET /shows/{id}", s.GetShowPage)
-	mux.HandleFunc("GET /shows/{id}/season/{season}", s.GetShowSeason)
+	mux.HandleFunc("GET /shows/{id}", s.GetShow)
+	// mux.HandleFunc("GET /shows/{id}", s.GetShowPage)
+	// mux.HandleFunc("GET /shows/{id}/season/{season}", s.GetShowSeason)
 	mux.HandleFunc("GET /shows/{id}/stream/{fname...}", s.StreamShow)
 
 	mux.HandleFunc("GET /login", s.RenderPageHandler("login.html"))

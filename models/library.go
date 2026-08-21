@@ -35,14 +35,7 @@ type ShowDetail struct {
 	Synopsis     string
 	Japanese     string
 	EpisodeCount int
-	Seasons      []SeasonOption
-	Season       Season
-}
-
-type SeasonOption struct {
-	Index   int
-	Name    string
-	Current bool
+	Seasons      []Season
 }
 
 type LibraryStat struct {

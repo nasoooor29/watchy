@@ -70,6 +70,23 @@ func RenderBase(
 	)
 }
 
+func RenderComponent(
+	w io.Writer,
+	page string,
+	component string,
+	data any,
+) error {
+	// NOTE: change it in prod to create the template once and reuse it
+	t := newTemplates()
+	tmpl, exists := t.pages[page]
+	if !exists {
+		slog.Error("template not found", "page", page)
+		return fmt.Errorf("template not found: %s", page)
+	}
+
+	return tmpl.ExecuteTemplate(w, component, data)
+}
+
 func RenderContent(
 	w io.Writer,
 	page string,
