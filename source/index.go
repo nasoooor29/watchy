@@ -52,7 +52,6 @@ func (i *Indexer) IndexShows() error {
 		showPath := filepath.Join(i.env.TvDir, show)
 		_, err := i.db.GetShowByPath(showPath)
 		if err == nil {
-			slog.Debug("show", show, "already exists")
 			continue
 		}
 
