@@ -19,6 +19,11 @@ func buildLibraryPage(database *db.SQL) (models.LibraryPage, error) {
 
 	libShows := []models.LibraryShow{}
 	for _, s := range dbShows {
+		// if the path have .hide-from-list file, if so, skip it
+		if utils.IsHiddenShow(s.Path) {
+			slog.Debug("skipping hidden show", "show", s.Title, "path", s.Path)
+			continue
+		}
 		libShows = append(libShows, models.LibraryShow{
 			ID:    s.ID,
 			Title: s.Title,
@@ -42,6 +47,9 @@ func buildShowDetail(database *db.SQL, id int64) (models.ShowDetail, error) {
 	show, err := database.GetShow(id)
 	if err != nil {
 		return models.ShowDetail{}, err
+	}
+	if utils.IsHiddenShow(show.Path) {
+		return models.ShowDetail{}, models.ErrHidden
 	}
 
 	detail := models.ShowDetail{
