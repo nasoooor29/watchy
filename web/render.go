@@ -39,7 +39,7 @@ func newTemplates() *Templates {
 
 		files = append(files, components...)
 
-		tmpl, err := template.ParseFiles(files...)
+		tmpl, err := template.New(name).Funcs(funcs).ParseFiles(files...)
 		if err != nil {
 			panic(err)
 		}
