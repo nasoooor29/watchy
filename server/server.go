@@ -4,7 +4,6 @@ import (
 	"backend/db"
 	"backend/models"
 	"backend/source"
-	"backend/web"
 	"fmt"
 	"io"
 	"log/slog"
@@ -165,44 +164,4 @@ func StartServer() {
 	}()
 
 	httpServer.ListenAndServe()
-}
-
-func (s *Server) render(w http.ResponseWriter, r *http.Request, status int, page string, data ...any) {
-	w.Header().Set("Content-Type", "text/html; charset=utf-8")
-	if r.Header.Get("HX-Request") == "true" {
-		w.WriteHeader(http.StatusOK)
-		if len(data) > 0 {
-			if err := web.RenderContent(w, page, data[0]); err != nil {
-				slog.Error("rendering page fragment failed", "page", page, "err", err)
-			}
-		} else {
-			if err := web.RenderContent(w, page, nil); err != nil {
-				slog.Error("rendering page fragment failed", "page", page, "err", err)
-			}
-		}
-		return
-	}
-	w.WriteHeader(status)
-	var pageData any
-	if len(data) > 0 {
-		pageData = data[0]
-	}
-	if err := web.RenderBase(w, page, pageData); err != nil {
-		slog.Error("rendering page failed", "page", page, "err", err)
-	}
-}
-
-func (s *Server) redirect(w http.ResponseWriter, r *http.Request, location string) {
-	if r.Header.Get("HX-Request") == "true" {
-		w.Header().Set("HX-Redirect", location)
-		w.WriteHeader(http.StatusOK)
-		return
-	}
-	http.Redirect(w, r, location, http.StatusSeeOther)
-}
-
-func (s *Server) RenderPageHandler(page string) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		s.render(w, r, http.StatusOK, page)
-	}
 }

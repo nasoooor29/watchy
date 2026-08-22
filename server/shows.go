@@ -9,7 +9,6 @@ import (
 	"backend/db"
 	"backend/models"
 	"backend/utils"
-	"backend/web"
 )
 
 func buildLibraryPage(database *db.SQL) (models.LibraryPage, error) {
@@ -84,24 +83,18 @@ func (s *Server) GetShow(w http.ResponseWriter, r *http.Request) {
 
 	detail, err := buildShowDetail(s.DB, id)
 	if err != nil {
-		slog.Error("failed to build show detail", "id", id, "err", err)
-		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		s.internalError(w, "failed to build show detail", err, "id", id)
 		return
 	}
 
-	if r.Header.Get("HX-Request") == "true" {
-		w.Header().Set("Content-Type", "text/html; charset=utf-8")
-		if err := web.RenderComponent(w, "home.html", "show-panel", detail); err != nil {
-			slog.Error("failed to render show-panel", "err", err)
-			http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
-		}
+	if isHtmx(r) {
+		s.renderComponent(w, "home.html", "show-panel", detail)
 		return
 	}
 
 	page, err := buildLibraryPage(s.DB)
 	if err != nil {
-		slog.Error("failed to build library page", "err", err)
-		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		s.internalError(w, "failed to build library page", err)
 		return
 	}
 
@@ -128,5 +121,7 @@ func (s *Server) GetPoster(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.Header().Set("Content-Type", "image/jpeg")
+	// cache the poster for a year and immutable
+	w.Header().Set("Cache-Control", "public, max-age=31536000, immutable")
 	w.Write(show.Poster)
 }
