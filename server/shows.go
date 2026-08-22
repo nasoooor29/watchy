@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log/slog"
 	"net/http"
+	"slices"
 	"strconv"
 
 	"backend/db"
@@ -67,11 +68,13 @@ func buildShowDetail(database *db.SQL, id int64) (models.ShowDetail, error) {
 	}
 
 	detail.Seasons = []models.Season{}
+	slices.Reverse(fseasons)
 	for i, name := range fseasons {
 		eps, err := utils.GetShowEpisodes(fseasons[i], show.Path, int(show.ID))
 		if err != nil {
 			return models.ShowDetail{}, err
 		}
+		slices.Reverse(eps)
 		detail.EpisodeCount = len(eps)
 		detail.Seasons = append(detail.Seasons, models.Season{
 			Name:     name,
