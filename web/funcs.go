@@ -1,13 +1,34 @@
 package web
 
 import (
+	"encoding/json"
 	"strings"
 
 	"github.com/nssteinbrenner/anitogo"
 )
 
+func metadataAttributes(metadata any) map[string]any {
+	encoded, err := json.Marshal(metadata)
+	if err != nil {
+		return map[string]any{}
+	}
+
+	fields := make(map[string]any)
+	if err := json.Unmarshal(encoded, &fields); err != nil {
+		return map[string]any{}
+	}
+
+	attributes := make(map[string]any, len(fields))
+	for name, value := range fields {
+		attributes[strings.ToLower(name)] = value
+	}
+
+	return attributes
+}
+
 // create custom template functions for the templates
 var funcs = map[string]any{
+	"metadataAttributes": metadataAttributes,
 	"formatEpisodeName": func(name string) string {
 		parsed := anitogo.Parse(name, anitogo.DefaultOptions)
 

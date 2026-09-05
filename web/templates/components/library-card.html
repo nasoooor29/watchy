@@ -1,5 +1,7 @@
 {{ define "library-card" }}
-<sl-card class="library-card">
+<sl-card class="library-card"
+  {{ range $name, $value := metadataAttributes .Metadata }}data-{{ $name }}="{{ $value }}"{{ end }}
+>
   <style>
     .library-card {
       height: 10.25rem;
