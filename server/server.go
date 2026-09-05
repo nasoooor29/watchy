@@ -90,7 +90,7 @@ type Server struct {
 func StartServer() {
 	env := models.GetEnv()
 	// create db
-	db, err := db.GetDB(env)
+	db, err := db.GetDB()
 	if err != nil {
 		slog.Error("", "err", err)
 		panic(err)

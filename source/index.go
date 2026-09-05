@@ -3,12 +3,13 @@ package source
 import (
 	"backend/db"
 	"backend/models"
-	"database/sql"
+	"backend/utils"
 	"io"
 	"log/slog"
 	"net/http"
 	"os"
 	"path/filepath"
+	"strings"
 )
 
 type Indexer struct {
@@ -16,10 +17,9 @@ type Indexer struct {
 	env *models.EnvVars
 }
 
-func NewIndexer(env *models.EnvVars, db *db.SQL) *Indexer {
-
+func NewIndexer(db *db.SQL) *Indexer {
 	return &Indexer{
-		env: env,
+		env: models.GetEnv(),
 		db:  db,
 	}
 }
@@ -33,6 +33,15 @@ func (i *Indexer) getShows() ([]string, error) {
 	var shows []string
 	for _, entry := range entries {
 		if !entry.IsDir() {
+			slog.Warn("skipping non-directory entry", "entry", entry.Name())
+			continue
+		}
+		if strings.HasPrefix(entry.Name(), ".") {
+			slog.Warn("skipping hidden directory", "dir", entry.Name())
+			continue
+		}
+		if utils.IsHiddenShow(filepath.Join(i.env.TvDir, entry.Name())) {
+			slog.Warn("skipping hidden show", "dir", entry.Name())
 			continue
 		}
 		shows = append(shows, entry.Name())
@@ -46,46 +55,11 @@ func (i *Indexer) IndexShows() error {
 	if err != nil {
 		return err
 	}
-	client := http.DefaultClient
-	sources := NewSources(
-		NewTenraiSource(i.env.TenraiBaseURL, client),
-		NewKitsuSource(i.env.KitsuBaseURL, client),
-	)
 	for _, show := range shows {
-		showPath := filepath.Join(i.env.TvDir, show)
-		_, err := i.db.GetShowByPath(showPath)
-		if err == nil {
-			continue
-		}
-
-		if err != sql.ErrNoRows {
-			slog.Error("error happened", "err", err)
-			continue
-		}
-		detail, err := sources.GetMetadata(show)
+		_, err := i.IndexShow(show)
 		if err != nil {
-			slog.Error("failed to fetch metadata", "show", show, "err", err)
-			continue
+			slog.Error("failed to index show", "show", show, "error", err)
 		}
-
-		resp, err := client.Get(detail.Image)
-		if err != nil {
-			slog.Error("failed to fetch poster", "show", show, "err", err)
-			continue
-		}
-
-		poster, err := io.ReadAll(resp.Body)
-		resp.Body.Close()
-		if err != nil {
-			slog.Error("failed to read poster", "show", show, "err", err)
-			continue
-		}
-		_, err = i.db.CreateShow(poster, filepath.Join(i.env.TvDir, show), detail.Title, 0)
-		if err != nil {
-			slog.Error("failed to insert show", "show", show, "err", err)
-			continue
-		}
-
 	}
 	return nil
 }

@@ -17,7 +17,8 @@ type SQL struct {
 	db  *sql.DB
 }
 
-func GetDB(env *models.EnvVars) (*SQL, error) {
+func GetDB() (*SQL, error) {
+	env := models.GetEnv()
 	rawDB, err := sql.Open("sqlite", env.DatabaseURL)
 	if err != nil {
 		return nil, err
