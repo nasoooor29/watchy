@@ -3,6 +3,14 @@
   <style>
     .show-detail {
       overflow: hidden;
+      height: 100%;
+      width: 100%;
+      box-sizing: border-box;
+    }
+    .show-detail::part(base),
+    .show-detail::part(body) {
+      height: 100%;
+      width: 100%;
     }
     .show-detail-top {
       display: flex;
