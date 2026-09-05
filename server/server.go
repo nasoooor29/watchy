@@ -3,7 +3,6 @@ package server
 import (
 	"backend/db"
 	"backend/models"
-	"backend/source"
 	"fmt"
 	"io"
 	"log/slog"
@@ -110,9 +109,8 @@ func (s *Server) StreamShow(w http.ResponseWriter, r *http.Request) {
 }
 
 type Server struct {
-	DB      *db.SQL
-	Indexer *source.Indexer
-	env     *models.EnvVars
+	DB  *db.SQL
+	env *models.EnvVars
 }
 
 func StartServer() {
@@ -123,12 +121,10 @@ func StartServer() {
 		slog.Error("", "err", err)
 		panic(err)
 	}
-	idxr := source.NewIndexer(env, db)
 	defer db.Close()
 	server := &Server{
-		DB:      db,
-		env:     env,
-		Indexer: idxr,
+		DB:  db,
+		env: env,
 	}
 
 	// create mux
@@ -139,12 +135,6 @@ func StartServer() {
 	}
 
 	slog.Info("server started", "host", env.Host, "port", env.Port)
-
-	go func() {
-		if err := server.Indexer.IndexShows(); err != nil {
-			slog.Error("failed to index shows", "err", err)
-		}
-	}()
 
 	cleanUpTicker := time.NewTicker(30 * time.Minute)
 	defer cleanUpTicker.Stop()

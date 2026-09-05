@@ -7,3 +7,6 @@ db.sqlite3
 .gocache
 .gocache-playwright
 .gocache*
+
+*.exe
+backend

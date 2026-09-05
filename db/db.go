@@ -22,6 +22,23 @@ func GetDB(env *models.EnvVars) (*SQL, error) {
 	if err != nil {
 		return nil, err
 	}
+
+	// SQLite pragmas such as foreign_keys are connection-local. Keep a single
+	// connection so every query uses the same safety and concurrency settings.
+	rawDB.SetMaxOpenConns(1)
+	rawDB.SetMaxIdleConns(1)
+
+	if _, err := rawDB.Exec("PRAGMA journal_mode = WAL"); err != nil {
+		// WAL changes the database header and needs a writable database directory.
+		// A read-only database can still be opened for reads, so retain the
+		// existing behavior and report why WAL could not be enabled.
+		slog.Warn("could not enable sqlite WAL", "err", err)
+	}
+	if _, err := rawDB.Exec("PRAGMA synchronous = NORMAL; PRAGMA foreign_keys = ON; PRAGMA busy_timeout = 5000"); err != nil {
+		_ = rawDB.Close()
+		return nil, fmt.Errorf("configure sqlite: %w", err)
+	}
+
 	s := &SQL{db: rawDB, env: env}
 
 	err = s.migrate()
