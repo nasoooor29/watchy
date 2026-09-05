@@ -33,6 +33,8 @@
   >
     <sl-icon name="search" slot="prefix"></sl-icon>
   </sl-input>
+  <sl-switch class="library-search-mode" size="small" checked>
+  </sl-switch>
 
   <sl-select value="latest-ep" aria-label="Sort library" size="small">
     <sl-option value="latest-ep">Recently updated</sl-option>
@@ -40,9 +42,6 @@
     <sl-option value="alpha">Alphabetical</sl-option>
   </sl-select>
 
-  <sl-switch class="library-search-mode" size="small">
-    Adv search
-  </sl-switch>
 
   <sl-icon-button
     name="arrow-clockwise"
@@ -76,7 +75,6 @@
     const nativeInput = input.shadowRoot?.querySelector('input');
     const query = String(input.value || nativeInput?.value || '').trim().toLowerCase();
     const advanced = document.querySelector('.library-search-mode')?.checked;
-    const match = advanced && query.match(/^([\w-]+)\s*(<=|>=|!=|=|<|>|~)\s*(.*)$/);
 
     for (const card of grid.children) {
       if (!card.matches('.library-card')) continue;
@@ -84,36 +82,8 @@
       let visible;
       if (!query) {
         visible = true;
-      } else if (match) {
-        const [, field, operator, expected] = match;
-        const actual = (card.dataset[field] || '').toLowerCase();
-        switch (operator) {
-          case '~':
-            visible = actual.includes(expected);
-            break;
-          case '=':
-            visible = actual === expected;
-            break;
-          case '!=':
-            visible = actual !== expected;
-            break;
-          case '<':
-          case '>':
-          case '<=':
-          case '>=': {
-            const actualNumber = Number(actual);
-            const expectedNumber = Number(expected);
-            if (!Number.isFinite(actualNumber) || !Number.isFinite(expectedNumber)) {
-              visible = false;
-              break;
-            }
-            if (operator === '<') visible = actualNumber < expectedNumber;
-            if (operator === '>') visible = actualNumber > expectedNumber;
-            if (operator === '<=') visible = actualNumber <= expectedNumber;
-            if (operator === '>=') visible = actualNumber >= expectedNumber;
-            break;
-          }
-        }
+      } else if (advanced) {
+        visible = matchesExpression(card, query);
       } else {
         visible = Object.values(card.dataset).some((value) =>
           String(value).toLowerCase().includes(query)
@@ -121,6 +91,44 @@
       }
 
       card.style.display = visible ? '' : 'none';
+    }
+  }
+
+  function matchesExpression(card, expression) {
+    return expression.split('||').some((alternative) =>
+      alternative.split('&&').every((condition) => matchesCondition(card, condition.trim()))
+    );
+  }
+
+  function matchesCondition(card, condition) {
+    const match = condition.match(/^([\w-]+)\s*(<=|>=|!=|=|<|>|~)\s*(.*)$/);
+    if (!match) return false;
+
+    const [, field, operator, expectedValue] = match;
+    const actual = (card.dataset[field] || '').toLowerCase();
+    const expected = expectedValue.toLowerCase();
+
+    switch (operator) {
+      case '~':
+        return actual.includes(expected);
+      case '=':
+        return actual === expected;
+      case '!=':
+        return actual !== expected;
+      case '<':
+      case '>':
+      case '<=':
+      case '>=': {
+        const actualNumber = Number(actual);
+        const expectedNumber = Number(expected);
+        if (!Number.isFinite(actualNumber) || !Number.isFinite(expectedNumber)) return false;
+        if (operator === '<') return actualNumber < expectedNumber;
+        if (operator === '>') return actualNumber > expectedNumber;
+        if (operator === '<=') return actualNumber <= expectedNumber;
+        return actualNumber >= expectedNumber;
+      }
+      default:
+        return false;
     }
   }
 
