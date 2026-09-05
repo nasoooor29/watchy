@@ -1,11 +1,25 @@
 package db
 
+import (
+	"backend/models"
+	"encoding/json"
+	"path/filepath"
+)
+
 type Show struct {
 	ID     int64  `db:"id"`
 	Poster []byte `db:"poster"`
 	Path   string `db:"path"`
-	Title  string `db:"title"`
-	MalId  int    `db:"mal_id"`
+	Metadata string `db:"metadata"`
+}
+
+// GetMetadata converts the optional stored metadata into the application model.
+func (s *Show) GetMetadata() models.Metadata {
+	metadata := models.Metadata{Title: filepath.Base(s.Path)}
+	if s.Metadata != "" {
+		_ = json.Unmarshal([]byte(s.Metadata), &metadata)
+	}
+	return metadata
 }
 
 func (q *SQL) GetShow(id int64) (*Show, error) {
@@ -24,10 +38,9 @@ func (q *SQL) GetAllShows() ([]Show, error) {
 	return GetAll[Show](q.db, "SELECT * FROM shows")
 }
 
-func (q *SQL) CreateShow(poster []byte, path, title string, malId int) (*Show, error) {
+func (q *SQL) CreateShow(poster []byte, path, metadata string) (*Show, error) {
 	result, err := q.db.Exec(
-		"INSERT INTO shows (poster, path, title, mal_id) VALUES (?, ?, ?, ?)",
-		poster, path, title, malId,
+		"INSERT INTO shows (poster, path, metadata) VALUES (?, ?, ?)", poster, path, metadata,
 	)
 	if err != nil {
 		return nil, err

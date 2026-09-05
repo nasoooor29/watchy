@@ -3,6 +3,7 @@ package source
 import (
 	"backend/models"
 	"errors"
+	"log/slog"
 )
 
 type ExternalSource interface {
@@ -22,6 +23,7 @@ func NewSources(sources ...ExternalSource) *Sources {
 func (m *Sources) GetMetadata(title string) (*models.Metadata, error) {
 	var errs []error
 	for _, src := range m.TierList {
+		slog.Info("fetching metadata from source", "source", src, "title", title)
 		meta, err := src.FetchDetails(title)
 		if err == nil && meta != nil {
 			return meta, nil

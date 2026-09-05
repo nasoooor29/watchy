@@ -4,6 +4,7 @@ import (
 	"backend/db"
 	"backend/models"
 	"backend/utils"
+	"encoding/json"
 	"io"
 	"log/slog"
 	"net/http"
@@ -60,23 +61,26 @@ func (i *Indexer) IndexShows() error {
 		if err != nil {
 			slog.Error("failed to index show", "show", show, "error", err)
 		}
+		slog.Info("successfully indexed show", "show", show)
 	}
 	return nil
 }
 
 func (i *Indexer) IndexShow(path string) (*db.Show, error) {
+	showPath := filepath.Join(i.env.TvDir, path)
 	client := http.DefaultClient
 	sources := NewSources(
 		NewTenraiSource(i.env.TenraiBaseURL, client),
 		NewKitsuSource(i.env.KitsuBaseURL, client),
 	)
-	show, err := i.db.GetShowByPath(path)
+	show, err := i.db.GetShowByPath(showPath)
 	if err == nil {
 		return show, nil
 	}
-	detail, err := sources.GetMetadata(show.Title)
+	detail, err := sources.GetMetadata(filepath.Base(showPath))
 	if err != nil {
-		return nil, err
+		metadata, _ := json.Marshal(models.Metadata{Title: filepath.Base(showPath)})
+		return i.db.CreateShow(nil, showPath, string(metadata))
 	}
 	resp, err := client.Get(detail.Image)
 	if err != nil {
@@ -87,7 +91,11 @@ func (i *Indexer) IndexShow(path string) (*db.Show, error) {
 	if err != nil {
 		return nil, err
 	}
-	show, err = i.db.CreateShow(poster, filepath.Join(i.env.TvDir, show.Path), detail.Title, 0)
+	metadata, err := json.Marshal(detail)
+	if err != nil {
+		return nil, err
+	}
+	show, err = i.db.CreateShow(poster, showPath, string(metadata))
 	if err != nil {
 		return nil, err
 	}

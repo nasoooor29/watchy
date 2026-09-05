@@ -16,8 +16,7 @@ CREATE TABLE IF NOT EXISTS shows (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     poster BLOB,
     path TEXT UNIQUE,
-    title TEXT NOT NULL,
-    mal_id INTEGER -- For jikan/mal
+    metadata TEXT
 );
 
 CREATE INDEX IF NOT EXISTS idx_cookies_userid ON cookies(userid);

@@ -49,8 +49,10 @@ func buildShowDetail(database *db.SQL, showPath string) (models.Show, error) {
 		Metadata: models.Metadata{Title: filepath.Base(showPath), Image: "/public/fallback.svg"},
 	}
 	if show, err := database.GetShowByPath(showPath); err == nil {
-		detail.Metadata.Title = show.Title
-		detail.Metadata.Image = "/api/poster/" + showPath
+		detail.Metadata = show.GetMetadata()
+		if len(show.Poster) > 0 {
+			detail.Metadata.Image = "/api/poster/" + showPath
+		}
 	}
 
 	fseasons, err := utils.GetShowSeasons(showPath)
