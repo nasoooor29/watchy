@@ -30,9 +30,10 @@
     <sl-icon name="search" slot="prefix"></sl-icon>
   </sl-input>
 
-  <sl-select value="recent" aria-label="Sort library" size="small">
-    <sl-option value="recent">Recently updated</sl-option>
-    <sl-option value="alphabetical">Alphabetical</sl-option>
+  <sl-select value="latest-ep" aria-label="Sort library" size="small">
+    <sl-option value="latest-ep">Recently updated</sl-option>
+    <sl-option value="percent">Progress</sl-option>
+    <sl-option value="alpha">Alphabetical</sl-option>
   </sl-select>
 
   <sl-icon-button
@@ -40,4 +41,42 @@
     label="Refresh library"
   ></sl-icon-button>
 </div>
+
+<script>
+  function sortLibrary(select) {
+    const grid = document.querySelector('.library-grid');
+    if (!grid) return;
+
+    const cards = [...grid.children].filter((card) => card.matches('.library-card'));
+
+    cards.sort((left, right) => {
+      if (select.value === 'alpha') {
+        return (left.dataset.title || '').localeCompare(right.dataset.title || '');
+      }
+
+      const field = select.value === 'percent' ? 'percent' : 'latestep';
+      return (Number(right.dataset[field]) || 0) - (Number(left.dataset[field]) || 0);
+    });
+
+    grid.replaceChildren(...cards);
+  }
+
+  function bindLibrarySort(root = document) {
+    const select = root.querySelector('.library-toolbar sl-select');
+    if (!select) return;
+
+    if (!select.dataset.sortBound) {
+      select.dataset.sortBound = 'true';
+      select.addEventListener('sl-change', () => sortLibrary(select));
+    }
+    sortLibrary(select);
+  }
+
+  bindLibrarySort();
+  document.addEventListener('DOMContentLoaded', () => bindLibrarySort());
+  document.addEventListener('sl-change', (event) => {
+    if (event.target.matches('.library-toolbar sl-select')) sortLibrary(event.target);
+  });
+  document.addEventListener('htmx:afterSettle', () => bindLibrarySort());
+</script>
 {{ end }}
