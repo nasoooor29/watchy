@@ -21,12 +21,9 @@ type Sources struct {
 	TierList []ExternalSource
 }
 
-func NewSources(kitsu ExternalSource) *Sources {
+func NewSources(sources ...ExternalSource) *Sources {
 	return &Sources{
-		TierList: []ExternalSource{
-			kitsu,
-			// mal,
-		},
+		TierList: sources,
 	}
 }
 

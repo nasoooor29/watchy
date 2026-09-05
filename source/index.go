@@ -47,7 +47,10 @@ func (i *Indexer) IndexShows() error {
 		return err
 	}
 	client := http.DefaultClient
-	sources := NewSources(NewKitsuSource(i.env.KitsuBaseURL, client))
+	sources := NewSources(
+		NewTenraiSource(i.env.TenraiBaseURL, client),
+		NewKitsuSource(i.env.KitsuBaseURL, client),
+	)
 	for _, show := range shows {
 		showPath := filepath.Join(i.env.TvDir, show)
 		_, err := i.db.GetShowByPath(showPath)
@@ -89,7 +92,10 @@ func (i *Indexer) IndexShows() error {
 
 func (i *Indexer) IndexShow(path string) (*db.Show, error) {
 	client := http.DefaultClient
-	sources := NewSources(NewKitsuSource(i.env.KitsuBaseURL, client))
+	sources := NewSources(
+		NewTenraiSource(i.env.TenraiBaseURL, client),
+		NewKitsuSource(i.env.KitsuBaseURL, client),
+	)
 	show, err := i.db.GetShowByPath(path)
 	if err == nil {
 		return show, nil

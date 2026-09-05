@@ -21,8 +21,8 @@ type EnvVars struct {
 
 	TvDir string
 
-	KitsuBaseURL string
-	// KitsuToken   string
+	KitsuBaseURL  string
+	TenraiBaseURL string
 }
 
 func GetEnv() *EnvVars {
@@ -39,8 +39,8 @@ func GetEnv() *EnvVars {
 		LogLevel:      EnvString("LOG_LEVEL", "debug"),
 		Timeout:       EnvInt("TIMEOUT", 30),
 		TvDir:         EnvString("TV_DIR", "/mnt/Thicc32/tv"),
-		KitsuBaseURL:  EnvString("KitsuBaseURL", "https://kitsu.io/api/edge"),
-		// KitsuToken:    EnvString("KitsuToken", ""),
+		TenraiBaseURL: EnvString("TENRAI_BASE_URL", "https://api.tenrai.org/v1"),
+		KitsuBaseURL:  EnvString("KITSU_BASE_URL", "https://kitsu.io/api/edge"),
 	}
 }
 
