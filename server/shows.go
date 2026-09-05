@@ -109,6 +109,7 @@ func (s *Server) GetShow(w http.ResponseWriter, r *http.Request) {
 
 	s.render(w, r, http.StatusOK, "home.html", map[string]any{
 		"Shows": page,
+		"Show":  detail,
 	})
 }
 

@@ -76,7 +76,9 @@
     </aside>
 
     <div class="library-content" id="show-panel">
-      <div id="show-panel"></div>
+      <div id="show-panel">
+        {{ if .Show }}{{ template "show-panel" .Show }}{{ end }}
+      </div>
     </div>
   </div>
 </div>
