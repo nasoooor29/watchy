@@ -66,8 +66,20 @@
     }
     .show-detail-synopsis {
       margin: 0.4rem 0 0;
-      color: var(--sl-color-neutral-400);
+      color: var(--ctp-subtext1);
       line-height: 1.5;
+      display: -webkit-box;
+      overflow: hidden;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 3;
+    }
+    .show-detail-synopsis-toggle[open] .show-detail-synopsis {
+      display: block;
+    }
+    .show-detail-synopsis-toggle summary {
+      cursor: pointer;
+      color: var(--ctp-text);
+      font-weight: 600;
     }
     @media (max-width: 540px) {
       .show-detail-top {
@@ -97,6 +109,7 @@
       {{ if .Metadata.Alternative }}<p class="subtle">{{ .Metadata.Alternative }}</p>{{ end }}
       {{ if .Metadata.Japanese }}<p class="subtle">{{ .Metadata.Japanese }}</p>{{ end }}
       <div class="show-detail-tags">
+        {{ if .Metadata.Tags }}<span class="subtle">Genres:</span>{{ end }}
         {{ range .Metadata.Tags }}
         <sl-tag size="small">{{ . }}</sl-tag>
         {{ end }}
@@ -107,10 +120,10 @@
         {{ if gt .Metadata.Percent 0 }} · {{ .Metadata.Percent }}%{{ end }}
       </p>
       {{ end }}
-      <div class="show-detail-body">
-        <h2>Synopsis</h2>
+      <details class="show-detail-body show-detail-synopsis-toggle">
+        <summary>Synopsis</summary>
         <p class="show-detail-synopsis">{{ if .Metadata.Synopsis }}{{ .Metadata.Synopsis }}{{ else }}No synopsis available.{{ end }}</p>
-      </div>
+      </details>
       <div class="show-detail-actions">
         <sl-button variant="primary">Continue watching</sl-button>
         <sl-button>
