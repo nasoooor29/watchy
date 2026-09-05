@@ -3,10 +3,10 @@ package server
 import (
 	"log/slog"
 	"net/http"
-	"slices"
 	"net/url"
 	"os"
 	"path/filepath"
+	"slices"
 
 	"backend/db"
 	"backend/models"
@@ -21,7 +21,9 @@ func buildLibraryPage(tvDir string) ([]models.Show, error) {
 
 	libShows := []models.Show{}
 	for _, entry := range entries {
-		if !entry.IsDir() || entry.Name() == "" || entry.Name()[0] == '.' { continue }
+		if !entry.IsDir() || entry.Name() == "" || entry.Name()[0] == '.' {
+			continue
+		}
 		showPath := filepath.Join(tvDir, entry.Name())
 		// if the path have .hide-from-list file, if so, skip it
 		if utils.IsHiddenShow(showPath) {
@@ -29,7 +31,7 @@ func buildLibraryPage(tvDir string) ([]models.Show, error) {
 			continue
 		}
 		libShows = append(libShows, models.Show{
-			Path: showPath,
+			Path:     showPath,
 			Metadata: models.Metadata{Title: entry.Name(), Image: "/public/fallback.svg"},
 		})
 	}
@@ -43,7 +45,7 @@ func buildShowDetail(database *db.SQL, showPath string) (models.Show, error) {
 	}
 
 	detail := models.Show{
-		Path: showPath,
+		Path:     showPath,
 		Metadata: models.Metadata{Title: filepath.Base(showPath), Image: "/public/fallback.svg"},
 	}
 	if show, err := database.GetShowByPath(showPath); err == nil {
