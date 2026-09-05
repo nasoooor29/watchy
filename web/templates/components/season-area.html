@@ -30,16 +30,14 @@
     gap: 0.5rem;
   }
 </style>
-{{ range $name, $episodes := .Seasons }}
-  {{ if $episodes }}
-  <sl-details open summary="{{ $name }}">
+{{ range .Seasons }}
+  <sl-details open summary="{{ .Name }}">
     <div class="episode-list">
-      {{ range $episodes }}
+      {{ range .Episodes }}
         {{ template "episode-row" . }}
       {{ end }}
     </div>
   </sl-details>
-  {{ end }}
 {{ end }}
 
 {{ end }}

@@ -75,15 +75,15 @@ func buildShowDetail(database *db.SQL, showPath string) (models.Show, error) {
 		return models.Show{}, models.ErrFailedToBuildShowDetails
 	}
 
-	detail.Seasons = make(map[string][]models.Episode)
 	slices.Reverse(fseasons)
+	detail.Seasons = make([]models.Season, 0, len(fseasons))
 	for i, name := range fseasons {
 		eps, err := utils.GetShowEpisodes(fseasons[i], showPath)
 		if err != nil {
 			return models.Show{}, err
 		}
 		slices.Reverse(eps)
-		detail.Seasons[name] = eps
+		detail.Seasons = append(detail.Seasons, models.Season{Name: name, Episodes: eps})
 	}
 
 	return detail, nil

@@ -2,8 +2,13 @@ package models
 
 type Show struct {
 	Path     string
-	Seasons  map[string][]Episode
+	Seasons  []Season
 	Metadata Metadata
+}
+
+type Season struct {
+	Name     string
+	Episodes []Episode
 }
 
 type Metadata struct {
