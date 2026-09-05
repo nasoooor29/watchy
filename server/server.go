@@ -29,7 +29,7 @@ func (s *Server) RegisterRoutes() http.Handler {
 			return
 		}
 
-		page, err := buildLibraryPage(s.env.TvDir)
+		page, err := buildLibraryPage(s.DB, s.env.TvDir)
 		if err != nil {
 			slog.Error("failed to build library page", "err", err)
 			http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)

@@ -95,17 +95,22 @@
       <p class="show-detail-eyebrow">Now watching</p>
       <h1 class="show-detail-title">{{ .Metadata.Title }}</h1>
       {{ if .Metadata.Alternative }}<p class="subtle">{{ .Metadata.Alternative }}</p>{{ end }}
+      {{ if .Metadata.Japanese }}<p class="subtle">{{ .Metadata.Japanese }}</p>{{ end }}
       <div class="show-detail-tags">
         {{ range .Metadata.Tags }}
         <sl-tag size="small">{{ . }}</sl-tag>
         {{ end }}
       </div>
-      {{ if .Metadata.Synopsis }}
+      {{ if or .Metadata.Progress (gt .Metadata.Percent 0) }}
+      <p class="subtle">
+        {{ if .Metadata.Progress }}{{ .Metadata.Progress }}{{ end }}
+        {{ if gt .Metadata.Percent 0 }} · {{ .Metadata.Percent }}%{{ end }}
+      </p>
+      {{ end }}
       <div class="show-detail-body">
         <h2>Synopsis</h2>
-        <p class="show-detail-synopsis">{{ .Metadata.Synopsis }}</p>
+        <p class="show-detail-synopsis">{{ if .Metadata.Synopsis }}{{ .Metadata.Synopsis }}{{ else }}No synopsis available.{{ end }}</p>
       </div>
-      {{ end }}
       <div class="show-detail-actions">
         <sl-button variant="primary">Continue watching</sl-button>
         <sl-button>

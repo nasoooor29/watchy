@@ -13,7 +13,7 @@ import (
 	"backend/utils"
 )
 
-func buildLibraryPage(tvDir string) ([]models.Show, error) {
+func buildLibraryPage(database *db.SQL, tvDir string) ([]models.Show, error) {
 	entries, err := os.ReadDir(tvDir)
 	if err != nil {
 		return nil, err
@@ -30,16 +30,22 @@ func buildLibraryPage(tvDir string) ([]models.Show, error) {
 			slog.Debug("skipping hidden show", "show", entry.Name(), "path", showPath)
 			continue
 		}
-		libShows = append(libShows, models.Show{
+		show := models.Show{
 			Path:     showPath,
 			Metadata: models.Metadata{Title: entry.Name(), Image: "/public/fallback.svg"},
-		})
+		}
+		if record, err := database.GetShowByPath(showPath); err == nil {
+			show.Metadata = record.GetMetadata()
+			if len(record.Poster) > 0 { show.Metadata.Image = "/api/poster/" + showPath }
+		}
+		libShows = append(libShows, show)
 	}
 
 	return libShows, nil
 }
 
 func buildShowDetail(database *db.SQL, showPath string) (models.Show, error) {
+	showPath = filepath.FromSlash(showPath)
 	if utils.IsHiddenShow(showPath) {
 		return models.Show{}, models.ErrHidden
 	}
@@ -95,7 +101,7 @@ func (s *Server) GetShow(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	page, err := buildLibraryPage(s.env.TvDir)
+	page, err := buildLibraryPage(s.DB, s.env.TvDir)
 	if err != nil {
 		s.internalError(w, "failed to build library page", err)
 		return
@@ -112,6 +118,7 @@ func (s *Server) GetPoster(w http.ResponseWriter, r *http.Request) {
 		http.NotFound(w, r)
 		return
 	}
+	showPath = filepath.FromSlash(showPath)
 
 	show, err := s.DB.GetShowByPath(showPath)
 	if err != nil {
