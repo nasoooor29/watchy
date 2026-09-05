@@ -86,24 +86,24 @@
   </style>
   <div class="show-detail-top">
     <div class="show-detail-cover">
-      {{ if .Image }}<img
-        src="{{ .Image }}"
-        alt="{{ .Title }} cover"
+      {{ if .Metadata.Image }}<img
+        src="{{ .Metadata.Image }}"
+        alt="{{ .Metadata.Title }} cover"
       />{{ end }}
     </div>
     <div class="show-detail-copy">
       <p class="show-detail-eyebrow">Now watching</p>
-      <h1 class="show-detail-title">{{ .Title }}</h1>
-      {{ if .Alternative }}<p class="subtle">{{ .Alternative }}</p>{{ end }}
+      <h1 class="show-detail-title">{{ .Metadata.Title }}</h1>
+      {{ if .Metadata.Alternative }}<p class="subtle">{{ .Metadata.Alternative }}</p>{{ end }}
       <div class="show-detail-tags">
-        {{ range .Tags }}
+        {{ range .Metadata.Tags }}
         <sl-tag size="small">{{ . }}</sl-tag>
         {{ end }}
       </div>
-      {{ if .Synopsis }}
+      {{ if .Metadata.Synopsis }}
       <div class="show-detail-body">
         <h2>Synopsis</h2>
-        <p class="show-detail-synopsis">{{ .Synopsis }}</p>
+        <p class="show-detail-synopsis">{{ .Metadata.Synopsis }}</p>
       </div>
       {{ end }}
       <div class="show-detail-actions">

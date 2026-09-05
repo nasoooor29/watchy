@@ -1,54 +1,24 @@
 package models
 
-type LibraryPage struct {
-	TotalSeries int
-	Shows       []LibraryShow
-	Selected    ShowDetail
-	Stats       []LibraryStat
+type Show struct {
+	Path     string
+	Seasons  map[string][]Episode
+	Metadata Metadata
 }
 
-type LibraryShow struct {
-	ID       int64
-	Title    string
-	Year     int
-	Score    float64
-	Progress string
-	Percent  int
-	Image    string
+type Metadata struct {
+	Title       string
+	Alternative string
+	Image       string
+	Tags        []string
+	Progress    string
+	Percent     int
+	Synopsis    string
+	Japanese    string
 }
 
-type LibraryEpisode struct {
-	Name    string
+type Episode struct {
+	Index   int
 	Watched bool
-	ID      int
-	Sources []EpisodeSource
-}
-
-type ShowDetail struct {
-	ID           int64
-	Title        string
-	Alternative  string
-	Image        string
-	Tags         []string
-	Progress     string
-	Percent      int
-	Synopsis     string
-	Japanese     string
-	EpisodeCount int
-	Seasons      []Season
-}
-
-type LibraryStat struct {
-	Label string
-	Value string
-}
-
-type Season struct {
-	Name     string
-	Episodes []LibraryEpisode
-}
-
-type EpisodeSource struct {
-	Path  string
-	Label string
+	Paths   []string
 }

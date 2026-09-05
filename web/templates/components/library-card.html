@@ -61,25 +61,23 @@
   </style>
 <div 
     class="library-card-content cursor-pointer"
-    hx-get="/shows/{{ .ID }}" 
+    hx-get="/shows/{{ .Path }}" 
     hx-target="#show-panel" 
     hx-swap="innerHTML"
-    hx-push-url="/shows/{{ .ID }}"
+    hx-push-url="/shows/{{ .Path }}"
   >
     <div class="library-card-cover">
       <img
         src="{{ .Image }}"
-        alt="{{ .Title }} cover"
+        alt="{{ .Metadata.Title }} cover"
         loading="lazy"
       />
     </div>
     <div class="library-card-info">
       <div class="library-card-badges">
-        {{ if gt .Score 0.0 }}<sl-badge variant="warning">{{ printf "%.2f" .Score }}</sl-badge>{{ end }}
-        {{ if .Progress }}<sl-badge variant="primary">{{ .Progress }}</sl-badge>{{ end }}
+        {{ if .Metadata.Progress }}<sl-badge variant="primary">{{ .Metadata.Progress }}</sl-badge>{{ end }}
       </div>
-      <h2 class="library-card-title">{{ .Title }}</h2>
-      {{ if .Year }}<p class="library-card-meta">{{ .Year }}</p>{{ end }}
+      <h2 class="library-card-title">{{ .Metadata.Title }}</h2>
     </div>
   </div>
 </sl-card>

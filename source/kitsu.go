@@ -25,7 +25,7 @@ func NewKitsuSource(baseURL string, client *http.Client) ExternalSource {
 }
 
 // FetchDetails implements [ExternalSource].
-func (k *KitsuSource) FetchDetails(title string) (*models.ShowDetail, error) {
+func (k *KitsuSource) FetchDetails(title string) (*models.Metadata, error) {
 	u, err := url.Parse(k.baseURL)
 	if err != nil {
 		return nil, err
@@ -54,14 +54,13 @@ func (k *KitsuSource) FetchDetails(title string) (*models.ShowDetail, error) {
 		return nil, err
 	}
 
-	return &models.ShowDetail{
-		Title:        title,
-		Alternative:  data.Attributes.Titles.En,
-		Image:        data.Attributes.PosterImage.Original,
-		Tags:         tags,
-		Synopsis:     data.Attributes.Synopsis,
-		Japanese:     data.Attributes.Titles.JaJp,
-		EpisodeCount: data.Attributes.EpisodeCount,
+	return &models.Metadata{
+		Title:       title,
+		Alternative: data.Attributes.Titles.En,
+		Image:       data.Attributes.PosterImage.Original,
+		Tags:        tags,
+		Synopsis:    data.Attributes.Synopsis,
+		Japanese:    data.Attributes.Titles.JaJp,
 	}, nil
 }
 

@@ -22,7 +22,7 @@ func NewTenraiSource(baseURL string, client *http.Client) ExternalSource {
 }
 
 // FetchDetails implements [ExternalSource].
-func (t *TenraiSource) FetchDetails(title string) (*models.ShowDetail, error) {
+func (t *TenraiSource) FetchDetails(title string) (*models.Metadata, error) {
 	u, err := url.Parse(t.baseURL)
 	if err != nil {
 		return nil, err
@@ -58,14 +58,12 @@ func (t *TenraiSource) FetchDetails(title string) (*models.ShowDetail, error) {
 		image = result.Images.JPG.ImageURL
 	}
 
-	return &models.ShowDetail{
-		ID:           int64(result.MALID),
-		Title:        result.Title,
-		Alternative:  result.TitleEnglish,
-		Image:        image,
-		Synopsis:     result.Synopsis,
-		Japanese:     result.TitleJapanese,
-		EpisodeCount: result.Episodes,
+	return &models.Metadata{
+		Title:       result.Title,
+		Alternative: result.TitleEnglish,
+		Image:       image,
+		Synopsis:    result.Synopsis,
+		Japanese:    result.TitleJapanese,
 	}, nil
 }
 

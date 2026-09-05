@@ -23,7 +23,7 @@
     }
   </style>
   <div class="episode-title">
-    <p class="episode-name">{{ .Name }}</p>
+    <p class="episode-name">Episode {{ .Index }}</p>
     {{ if .Watched }}
     <sl-button size="small" variant="success">watched</sl-button>
     {{ else }}
@@ -31,13 +31,13 @@
     {{ end }}
   </div>
   <div class="episode-sources">
-    {{ range .Sources }}
+    {{ range .Paths }}
     <sl-button
       size="small"
-      href="mpv:http://localhost:8080/shows/{{ $.ID }}/stream/{{ .Path }}"
+      href="mpv:http://localhost:8080/shows/{{ $.Path }}/stream/{{ .Path }}"
     >
       <sl-icon name="play-fill" slot="prefix"></sl-icon>
-      {{ formatEpisodeName .Label }}
+      {{ formatEpisodeName . }}
     </sl-button>
     {{ end }}
   </div>

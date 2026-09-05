@@ -2,7 +2,6 @@ package utils
 
 import (
 	"backend/models"
-	"fmt"
 	"log/slog"
 	"os"
 	"path/filepath"
@@ -30,7 +29,7 @@ func GetShowSeasons(path string) ([]string, error) {
 	return seasons, nil
 }
 
-func GetShowEpisodes(season, path string, id int) ([]models.LibraryEpisode, error) {
+func GetShowEpisodes(season, path string) ([]models.Episode, error) {
 	seasonPath := filepath.Join(path, season)
 	slog.Debug("reading season directory", "path", seasonPath)
 
@@ -39,7 +38,7 @@ func GetShowEpisodes(season, path string, id int) ([]models.LibraryEpisode, erro
 		return nil, err
 	}
 
-	sourcesMap := make(map[int][]models.EpisodeSource)
+	pathsMap := make(map[int][]string)
 
 	for _, entry := range entries {
 		if entry.IsDir() {
@@ -59,25 +58,21 @@ func GetShowEpisodes(season, path string, id int) ([]models.LibraryEpisode, erro
 			continue
 		}
 
-		sourcesMap[epNum] = append(sourcesMap[epNum], models.EpisodeSource{
-			Label: name,
-			Path:  filepath.Join(season, name),
-		})
+		pathsMap[epNum] = append(pathsMap[epNum], filepath.Join(season, name))
 	}
 
-	keys := make([]int, 0, len(sourcesMap))
-	for k := range sourcesMap {
+	keys := make([]int, 0, len(pathsMap))
+	for k := range pathsMap {
 		keys = append(keys, k)
 	}
 	slices.Sort(keys)
 
-	episodes := make([]models.LibraryEpisode, 0, len(keys))
+	episodes := make([]models.Episode, 0, len(keys))
 	for _, epNum := range keys {
-		episodes = append(episodes, models.LibraryEpisode{
-			ID:      id,
-			Name:    fmt.Sprintf("Episode %d", epNum),
+		episodes = append(episodes, models.Episode{
+			Index:   epNum,
 			Watched: false,
-			Sources: sourcesMap[epNum],
+			Paths: pathsMap[epNum],
 		})
 	}
 

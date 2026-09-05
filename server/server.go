@@ -38,7 +38,9 @@ func (s *Server) RegisterRoutes() http.Handler {
 			http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 			return
 		}
-		s.render(w, r, http.StatusOK, "home.html", page)
+		s.render(w, r, http.StatusOK, "home.html", map[string]any{
+			"Shows": page,
+		})
 	})
 
 	mux.HandleFunc("GET /api/poster/{id}", s.GetPoster)

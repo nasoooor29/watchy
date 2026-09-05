@@ -12,74 +12,59 @@ import (
 	"backend/utils"
 )
 
-func buildLibraryPage(database *db.SQL) (models.LibraryPage, error) {
+func buildLibraryPage(database *db.SQL) ([]models.Show, error) {
 	dbShows, err := database.GetAllShows()
 	if err != nil {
-		return models.LibraryPage{}, err
+		return nil, err
 	}
 
-	libShows := []models.LibraryShow{}
+	libShows := []models.Show{}
 	for _, s := range dbShows {
 		// if the path have .hide-from-list file, if so, skip it
 		if utils.IsHiddenShow(s.Path) {
 			slog.Debug("skipping hidden show", "show", s.Title, "path", s.Path)
 			continue
 		}
-		libShows = append(libShows, models.LibraryShow{
-			ID:    s.ID,
-			Title: s.Title,
-			Image: "/api/poster/" + fmt.Sprint(s.ID),
+		libShows = append(libShows, models.Show{
+			Path:     s.Path,
+			Metadata: models.Metadata{Title: s.Title, Image: "/api/poster/" + fmt.Sprint(s.ID)},
 		})
 	}
 
-	page := models.LibraryPage{
-		TotalSeries: len(libShows),
-		Shows:       libShows,
-	}
-
-	if len(dbShows) < 1 {
-		return page, nil
-	}
-
-	return page, nil
+	return libShows, nil
 }
 
-func buildShowDetail(database *db.SQL, id int64) (models.ShowDetail, error) {
+func buildShowDetail(database *db.SQL, id int64) (models.Show, error) {
 	show, err := database.GetShow(id)
 	if err != nil {
-		return models.ShowDetail{}, err
+		return models.Show{}, err
 	}
 	if utils.IsHiddenShow(show.Path) {
-		return models.ShowDetail{}, models.ErrHidden
+		return models.Show{}, models.ErrHidden
 	}
 
-	detail := models.ShowDetail{
-		ID:    show.ID,
-		Title: show.Title,
-		Image: "/api/poster/" + fmt.Sprint(show.ID),
+	detail := models.Show{
+		Path:     show.Path,
+		Metadata: models.Metadata{Title: show.Title, Image: "/api/poster/" + fmt.Sprint(show.ID)},
 	}
 
 	fseasons, err := utils.GetShowSeasons(show.Path)
 	if err != nil {
-		return models.ShowDetail{}, err
+		return models.Show{}, err
 	}
 	if len(fseasons) == 0 {
-		return models.ShowDetail{}, models.ErrFailedToBuildShowDetails
+		return models.Show{}, models.ErrFailedToBuildShowDetails
 	}
 
-	detail.Seasons = []models.Season{}
+	detail.Seasons = make(map[string][]models.Episode)
 	slices.Reverse(fseasons)
 	for i, name := range fseasons {
-		eps, err := utils.GetShowEpisodes(fseasons[i], show.Path, int(show.ID))
+		eps, err := utils.GetShowEpisodes(fseasons[i], show.Path)
 		if err != nil {
-			return models.ShowDetail{}, err
+			return models.Show{}, err
 		}
 		slices.Reverse(eps)
-		detail.EpisodeCount = len(eps)
-		detail.Seasons = append(detail.Seasons, models.Season{
-			Name:     name,
-			Episodes: eps,
-		})
+		detail.Seasons[name] = eps
 	}
 
 	return detail, nil
@@ -109,7 +94,9 @@ func (s *Server) GetShow(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	s.render(w, r, http.StatusOK, "home.html", page)
+	s.render(w, r, http.StatusOK, "home.html", map[string]any{
+		"Shows": page,
+	})
 }
 
 func (s *Server) GetPoster(w http.ResponseWriter, r *http.Request) {

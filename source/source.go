@@ -5,16 +5,8 @@ import (
 	"errors"
 )
 
-type Platform int
-
-const (
-	PlatformInternal Platform = iota
-	PlatformKitsu
-	PlatformMAL
-)
-
 type ExternalSource interface {
-	FetchDetails(title string) (*models.ShowDetail, error)
+	FetchDetails(title string) (*models.Metadata, error)
 }
 
 type Sources struct {
@@ -27,7 +19,7 @@ func NewSources(sources ...ExternalSource) *Sources {
 	}
 }
 
-func (m *Sources) GetMetadata(title string) (*models.ShowDetail, error) {
+func (m *Sources) GetMetadata(title string) (*models.Metadata, error) {
 	var errs []error
 	for _, src := range m.TierList {
 		meta, err := src.FetchDetails(title)
