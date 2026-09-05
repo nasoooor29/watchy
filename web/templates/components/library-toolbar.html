@@ -11,6 +11,10 @@
   .library-toolbar sl-select {
     width: 11rem;
   }
+  .library-toolbar sl-switch {
+    align-self: center;
+    white-space: nowrap;
+  }
   @media (max-width: 540px) {
     .library-toolbar {
       flex-wrap: wrap;
@@ -35,6 +39,10 @@
     <sl-option value="percent">Progress</sl-option>
     <sl-option value="alpha">Alphabetical</sl-option>
   </sl-select>
+
+  <sl-switch class="library-search-mode" size="small">
+    Adv search
+  </sl-switch>
 
   <sl-icon-button
     name="arrow-clockwise"
@@ -61,6 +69,61 @@
     grid.replaceChildren(...cards);
   }
 
+  function filterLibrary(input) {
+    const grid = document.querySelector('.library-grid');
+    if (!grid) return;
+
+    const nativeInput = input.shadowRoot?.querySelector('input');
+    const query = String(input.value || nativeInput?.value || '').trim().toLowerCase();
+    const advanced = document.querySelector('.library-search-mode')?.checked;
+    const match = advanced && query.match(/^([\w-]+)\s*(<=|>=|!=|=|<|>|~)\s*(.*)$/);
+
+    for (const card of grid.children) {
+      if (!card.matches('.library-card')) continue;
+
+      let visible;
+      if (!query) {
+        visible = true;
+      } else if (match) {
+        const [, field, operator, expected] = match;
+        const actual = (card.dataset[field] || '').toLowerCase();
+        switch (operator) {
+          case '~':
+            visible = actual.includes(expected);
+            break;
+          case '=':
+            visible = actual === expected;
+            break;
+          case '!=':
+            visible = actual !== expected;
+            break;
+          case '<':
+          case '>':
+          case '<=':
+          case '>=': {
+            const actualNumber = Number(actual);
+            const expectedNumber = Number(expected);
+            if (!Number.isFinite(actualNumber) || !Number.isFinite(expectedNumber)) {
+              visible = false;
+              break;
+            }
+            if (operator === '<') visible = actualNumber < expectedNumber;
+            if (operator === '>') visible = actualNumber > expectedNumber;
+            if (operator === '<=') visible = actualNumber <= expectedNumber;
+            if (operator === '>=') visible = actualNumber >= expectedNumber;
+            break;
+          }
+        }
+      } else {
+        visible = Object.values(card.dataset).some((value) =>
+          String(value).toLowerCase().includes(query)
+        );
+      }
+
+      card.style.display = visible ? '' : 'none';
+    }
+  }
+
   function bindLibrarySort(root = document) {
     const select = root.querySelector('.library-toolbar sl-select');
     if (!select) return;
@@ -72,11 +135,34 @@
     sortLibrary(select);
   }
 
+  function bindLibrarySearch(root = document) {
+    const input = root.querySelector('.library-toolbar sl-input');
+    if (!input || input.dataset.searchBound) return;
+
+    input.dataset.searchBound = 'true';
+    input.addEventListener('sl-input', () => filterLibrary(input));
+    input.addEventListener('input', () => filterLibrary(input));
+  }
+
   bindLibrarySort();
+  bindLibrarySearch();
+  customElements.whenDefined('sl-input').then(() => bindLibrarySearch());
   document.addEventListener('DOMContentLoaded', () => bindLibrarySort());
+  document.addEventListener('DOMContentLoaded', () => bindLibrarySearch());
   document.addEventListener('sl-change', (event) => {
     if (event.target.matches('.library-toolbar sl-select')) sortLibrary(event.target);
+    if (event.target.matches('.library-search-mode')) {
+      const input = document.querySelector('.library-toolbar sl-input');
+      if (input) filterLibrary(input);
+    }
   });
-  document.addEventListener('htmx:afterSettle', () => bindLibrarySort());
+  document.addEventListener('htmx:afterSettle', () => {
+    bindLibrarySort();
+    bindLibrarySearch();
+  });
+  document.addEventListener('DOMContentLoaded', () => {
+    const input = document.querySelector('.library-toolbar sl-input');
+    if (input) filterLibrary(input);
+  });
 </script>
 {{ end }}

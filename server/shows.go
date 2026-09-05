@@ -2,6 +2,7 @@ package server
 
 import (
 	"log/slog"
+	"math/rand"
 	"net/http"
 	"net/url"
 	"os"
@@ -41,6 +42,7 @@ func buildLibraryPage(database *db.SQL, tvDir string) ([]models.Show, error) {
 			}
 		}
 		// show.Metadata.LatestEp = utils.GetLatestFileTimestamp(showPath)
+		show.Metadata.LatestEp = rand.Int63n(1000000)
 
 		libShows = append(libShows, show)
 	}
