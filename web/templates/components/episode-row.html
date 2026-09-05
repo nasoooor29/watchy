@@ -34,7 +34,7 @@
     {{ range .Paths }}
     <sl-button
       size="small"
-      href="mpv:http://localhost:8080/shows/{{ $.Path }}/stream/{{ .Path }}"
+      href="mpv:http://localhost:8080/shows/stream/{{ . }}"
     >
       <sl-icon name="play-fill" slot="prefix"></sl-icon>
       {{ formatEpisodeName . }}

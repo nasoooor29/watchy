@@ -1,54 +1,57 @@
 package server
 
 import (
-	"fmt"
 	"log/slog"
 	"net/http"
 	"slices"
-	"strconv"
+	"net/url"
+	"os"
+	"path/filepath"
 
 	"backend/db"
 	"backend/models"
 	"backend/utils"
 )
 
-func buildLibraryPage(database *db.SQL) ([]models.Show, error) {
-	dbShows, err := database.GetAllShows()
+func buildLibraryPage(tvDir string) ([]models.Show, error) {
+	entries, err := os.ReadDir(tvDir)
 	if err != nil {
 		return nil, err
 	}
 
 	libShows := []models.Show{}
-	for _, s := range dbShows {
+	for _, entry := range entries {
+		if !entry.IsDir() || entry.Name() == "" || entry.Name()[0] == '.' { continue }
+		showPath := filepath.Join(tvDir, entry.Name())
 		// if the path have .hide-from-list file, if so, skip it
-		if utils.IsHiddenShow(s.Path) {
-			slog.Debug("skipping hidden show", "show", s.Title, "path", s.Path)
+		if utils.IsHiddenShow(showPath) {
+			slog.Debug("skipping hidden show", "show", entry.Name(), "path", showPath)
 			continue
 		}
 		libShows = append(libShows, models.Show{
-			Path:     s.Path,
-			Metadata: models.Metadata{Title: s.Title, Image: "/api/poster/" + fmt.Sprint(s.ID)},
+			Path: showPath,
+			Metadata: models.Metadata{Title: entry.Name(), Image: "/public/fallback.svg"},
 		})
 	}
 
 	return libShows, nil
 }
 
-func buildShowDetail(database *db.SQL, id int64) (models.Show, error) {
-	show, err := database.GetShow(id)
-	if err != nil {
-		return models.Show{}, err
-	}
-	if utils.IsHiddenShow(show.Path) {
+func buildShowDetail(database *db.SQL, showPath string) (models.Show, error) {
+	if utils.IsHiddenShow(showPath) {
 		return models.Show{}, models.ErrHidden
 	}
 
 	detail := models.Show{
-		Path:     show.Path,
-		Metadata: models.Metadata{Title: show.Title, Image: "/api/poster/" + fmt.Sprint(show.ID)},
+		Path: showPath,
+		Metadata: models.Metadata{Title: filepath.Base(showPath), Image: "/public/fallback.svg"},
+	}
+	if show, err := database.GetShowByPath(showPath); err == nil {
+		detail.Metadata.Title = show.Title
+		detail.Metadata.Image = "/api/poster/" + showPath
 	}
 
-	fseasons, err := utils.GetShowSeasons(show.Path)
+	fseasons, err := utils.GetShowSeasons(showPath)
 	if err != nil {
 		return models.Show{}, err
 	}
@@ -59,7 +62,7 @@ func buildShowDetail(database *db.SQL, id int64) (models.Show, error) {
 	detail.Seasons = make(map[string][]models.Episode)
 	slices.Reverse(fseasons)
 	for i, name := range fseasons {
-		eps, err := utils.GetShowEpisodes(fseasons[i], show.Path)
+		eps, err := utils.GetShowEpisodes(fseasons[i], showPath)
 		if err != nil {
 			return models.Show{}, err
 		}
@@ -71,8 +74,8 @@ func buildShowDetail(database *db.SQL, id int64) (models.Show, error) {
 }
 
 func (s *Server) GetShow(w http.ResponseWriter, r *http.Request) {
-	id, err := strconv.ParseInt(r.PathValue("id"), 10, 64)
-	if err != nil || id < 0 {
+	id, err := url.PathUnescape(r.PathValue("id"))
+	if err != nil || id == "" {
 		http.NotFound(w, r)
 		return
 	}
@@ -88,7 +91,7 @@ func (s *Server) GetShow(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	page, err := buildLibraryPage(s.DB)
+	page, err := buildLibraryPage(s.env.TvDir)
 	if err != nil {
 		s.internalError(w, "failed to build library page", err)
 		return
@@ -100,15 +103,15 @@ func (s *Server) GetShow(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) GetPoster(w http.ResponseWriter, r *http.Request) {
-	id, err := strconv.ParseInt(r.PathValue("id"), 10, 64)
-	if err != nil || id < 0 {
+	showPath, err := url.PathUnescape(r.PathValue("id"))
+	if err != nil || showPath == "" {
 		http.NotFound(w, r)
 		return
 	}
 
-	show, err := s.DB.GetShow(id)
+	show, err := s.DB.GetShowByPath(showPath)
 	if err != nil {
-		slog.Error("failed to get show", "id", id, "err", err)
+		slog.Error("failed to get show", "path", showPath, "err", err)
 		http.NotFound(w, r)
 		return
 	}

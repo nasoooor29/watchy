@@ -58,7 +58,7 @@ func GetShowEpisodes(season, path string) ([]models.Episode, error) {
 			continue
 		}
 
-		pathsMap[epNum] = append(pathsMap[epNum], filepath.Join(season, name))
+		pathsMap[epNum] = append(pathsMap[epNum], filepath.Join(path, season, name))
 	}
 
 	keys := make([]int, 0, len(pathsMap))

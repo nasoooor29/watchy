@@ -68,9 +68,10 @@
   >
     <div class="library-card-cover">
       <img
-        src="{{ .Image }}"
+        src="{{ .Metadata.Image }}"
         alt="{{ .Metadata.Title }} cover"
         loading="lazy"
+        onerror="this.onerror=null;this.src='/public/fallback.svg'"
       />
     </div>
     <div class="library-card-info">

@@ -4,15 +4,12 @@ import (
 	"backend/db"
 	"backend/models"
 	"fmt"
-	"io"
 	"log/slog"
 	"net/http"
 	"net/url"
 	"os"
 	"path"
 	"path/filepath"
-	"strconv"
-	"strings"
 	"time"
 
 	"github.com/go-playground/validator/v10"
@@ -32,7 +29,7 @@ func (s *Server) RegisterRoutes() http.Handler {
 			return
 		}
 
-		page, err := buildLibraryPage(s.DB)
+		page, err := buildLibraryPage(s.env.TvDir)
 		if err != nil {
 			slog.Error("failed to build library page", "err", err)
 			http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
@@ -43,11 +40,9 @@ func (s *Server) RegisterRoutes() http.Handler {
 		})
 	})
 
-	mux.HandleFunc("GET /api/poster/{id}", s.GetPoster)
-	mux.HandleFunc("GET /shows/{id}", s.GetShow)
-	// mux.HandleFunc("GET /shows/{id}", s.GetShowPage)
-	// mux.HandleFunc("GET /shows/{id}/season/{season}", s.GetShowSeason)
-	mux.HandleFunc("GET /shows/{id}/stream/{fname...}", s.StreamShow)
+	mux.HandleFunc("GET /api/poster/{id...}", s.GetPoster)
+	mux.HandleFunc("GET /shows/stream/{fname...}", s.StreamShow)
+	mux.HandleFunc("GET /shows/{id...}", s.GetShow)
 
 	mux.HandleFunc("GET /login", s.RenderPageHandler("login.html"))
 	mux.HandleFunc("POST /login", s.login)
@@ -61,7 +56,6 @@ func (s *Server) RegisterRoutes() http.Handler {
 }
 
 func (s *Server) StreamShow(w http.ResponseWriter, r *http.Request) {
-	id := r.PathValue("id")
 	rawFname := r.PathValue("fname")
 
 	fname, err := url.PathUnescape(rawFname)
@@ -70,24 +64,8 @@ func (s *Server) StreamShow(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	sid, err := strconv.ParseInt(id, 10, 64)
-	if err != nil {
-		models.ErrInvalidRequest.SendError(w)
-		return
-	}
-
-	show, err := s.DB.GetShow(sid)
-	if err != nil {
-		http.Error(w, "show not found", http.StatusNotFound)
-		return
-	}
-
-	showFS := os.DirFS(show.Path)
-
 	cleanPath := path.Clean(filepath.ToSlash(fname))
-	cleanPath = strings.TrimPrefix(cleanPath, "/")
-
-	file, err := showFS.Open(cleanPath)
+	file, err := os.Open(cleanPath)
 	if err != nil {
 		http.Error(w, "file not found", http.StatusNotFound)
 		return
@@ -101,13 +79,7 @@ func (s *Server) StreamShow(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// 4. Assert ReadSeeker for byte-range support in mpv
-	seeker, ok := file.(io.ReadSeeker)
-	if !ok {
-		http.Error(w, "seek not supported", http.StatusInternalServerError)
-		return
-	}
-
-	http.ServeContent(w, r, stat.Name(), stat.ModTime(), seeker)
+	http.ServeContent(w, r, stat.Name(), stat.ModTime(), file)
 }
 
 type Server struct {
