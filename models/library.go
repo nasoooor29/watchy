@@ -15,6 +15,7 @@ type Metadata struct {
 	Percent     int
 	Synopsis    string
 	Japanese    string
+	LatestEp    int64
 }
 
 type Episode struct {

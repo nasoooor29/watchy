@@ -36,8 +36,12 @@ func buildLibraryPage(database *db.SQL, tvDir string) ([]models.Show, error) {
 		}
 		if record, err := database.GetShowByPath(showPath); err == nil {
 			show.Metadata = record.GetMetadata()
-			if len(record.Poster) > 0 { show.Metadata.Image = "/api/poster/" + showPath }
+			if len(record.Poster) > 0 {
+				show.Metadata.Image = "/api/poster/" + showPath
+			}
 		}
+		// show.Metadata.LatestEp = utils.GetLatestFileTimestamp(showPath)
+
 		libShows = append(libShows, show)
 	}
 
