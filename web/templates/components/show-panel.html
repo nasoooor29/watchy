@@ -1,47 +1,54 @@
 {{ define "show-panel" }}
-<style>
-  .episodes::part(body) {
-    padding: 1rem;
-  }
-  .episodes {
-    display: block;
-    width: 100%;
-    box-sizing: border-box;
-  }
-  .section-heading {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 0.75rem;
-    margin-bottom: 1rem;
-  }
-  .section-heading h2,
-  .section-heading p {
-    margin: 0;
-  }
-  .section-heading h2 {
-    color: var(--ctp-text);
-    font-size: 1.125rem;
-  }
-  .subtle {
-    margin-top: 0.25rem !important;
-    color: var(--sl-color-neutral-400);
-    font-size: 0.875rem;
-  }
-</style>
-<div>{{ template "show-detail" . }}</div>
+<div id="show-panel" hx-get="/shows/{{ .Path }}" hx-trigger="every 5s" hx-target="this" hx-swap="outerHTML">
+  <style>
+    .episodes::part(body) {
+      padding: 1rem;
+    }
 
-<sl-card class="episodes">
-  <div class="section-heading">
-    <div>
-      <h2>Seasons &amp; episodes</h2>
-      <p class="subtle">Pick an available release to start watching.</p>
+    .episodes {
+      display: block;
+      width: 100%;
+      box-sizing: border-box;
+    }
+
+    .section-heading {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.75rem;
+      margin-bottom: 1rem;
+    }
+
+    .section-heading h2,
+    .section-heading p {
+      margin: 0;
+    }
+
+    .section-heading h2 {
+      color: var(--ctp-text);
+      font-size: 1.125rem;
+    }
+
+    .subtle {
+      margin-top: 0.25rem !important;
+      color: var(--sl-color-neutral-400);
+      font-size: 0.875rem;
+    }
+  </style>
+  <div>{{ template "show-detail" . }}</div>
+
+  <sl-card class="episodes">
+    <div class="section-heading">
+      <div>
+        <h2>Seasons &amp; episodes</h2>
+        <p class="subtle">Pick an available release to start watching.</p>
+      </div>
+
     </div>
 
-  </div>
-
-  <div id="season-area">
-    {{ template "season-area" . }}
-  </div>
-</sl-card>
+    <div id="season-area">
+      {{ template "season-area" . }}
+    </div>
+  </sl-card>
+</div>
 {{ end }}
