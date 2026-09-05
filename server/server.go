@@ -64,7 +64,7 @@ func (s *Server) StreamShow(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	cleanPath := path.Clean(filepath.ToSlash(fname))
+	cleanPath := path.Clean(filepath.ToSlash(filepath.Join(s.env.TvDir, fname)))
 	file, err := os.Open(cleanPath)
 	if err != nil {
 		http.Error(w, "file not found", http.StatusNotFound)

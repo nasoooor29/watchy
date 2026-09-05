@@ -26,19 +26,24 @@ func buildLibraryPage(database *db.SQL, tvDir string) ([]models.Show, error) {
 			continue
 		}
 		showPath := filepath.Join(tvDir, entry.Name())
+		relativeShowPath, err := filepath.Rel(tvDir, showPath)
+		if err != nil {
+			return nil, err
+		}
+		relativeShowPath = filepath.ToSlash(relativeShowPath)
 		// if the path have .hide-from-list file, if so, skip it
 		if utils.IsHiddenShow(showPath) {
 			slog.Debug("skipping hidden show", "show", entry.Name(), "path", showPath)
 			continue
 		}
 		show := models.Show{
-			Path:     showPath,
+			Path:     relativeShowPath,
 			Metadata: models.Metadata{Title: entry.Name(), Image: "/public/fallback.svg"},
 		}
-		if record, err := database.GetShowByPath(showPath); err == nil {
+		if record, err := database.GetShowByPath(relativeShowPath); err == nil {
 			show.Metadata = record.GetMetadata()
 			if len(record.Poster) > 0 {
-				show.Metadata.Image = "/api/poster/" + showPath
+				show.Metadata.Image = "/api/poster/" + relativeShowPath
 			}
 		}
 		// show.Metadata.LatestEp = utils.GetLatestFileTimestamp(showPath)
@@ -50,20 +55,26 @@ func buildLibraryPage(database *db.SQL, tvDir string) ([]models.Show, error) {
 	return libShows, nil
 }
 
-func buildShowDetail(database *db.SQL, showPath string) (models.Show, error) {
+func buildShowDetail(database *db.SQL, tvDir, showPath string) (models.Show, error) {
 	showPath = filepath.FromSlash(showPath)
+	if !filepath.IsAbs(showPath) {
+		showPath = filepath.Join(tvDir, showPath)
+	}
+	showPath, _ = filepath.Abs(showPath)
 	if utils.IsHiddenShow(showPath) {
 		return models.Show{}, models.ErrHidden
 	}
 
+	relativeShowPath, _ := filepath.Rel(tvDir, showPath)
+	relativeShowPath = filepath.ToSlash(relativeShowPath)
 	detail := models.Show{
-		Path:     showPath,
+		Path:     relativeShowPath,
 		Metadata: models.Metadata{Title: filepath.Base(showPath), Image: "/public/fallback.svg"},
 	}
-	if show, err := database.GetShowByPath(showPath); err == nil {
+	if show, err := database.GetShowByPath(filepath.ToSlash(relativeShowPath)); err == nil {
 		detail.Metadata = show.GetMetadata()
 		if len(show.Poster) > 0 {
-			detail.Metadata.Image = "/api/poster/" + showPath
+			detail.Metadata.Image = "/api/poster/" + filepath.ToSlash(relativeShowPath)
 		}
 	}
 
@@ -83,6 +94,15 @@ func buildShowDetail(database *db.SQL, showPath string) (models.Show, error) {
 			return models.Show{}, err
 		}
 		slices.Reverse(eps)
+		for episodeIndex := range eps {
+			for pathIndex, episodePath := range eps[episodeIndex].Paths {
+				relativePath, err := filepath.Rel(tvDir, episodePath)
+				if err != nil {
+					return models.Show{}, err
+				}
+				eps[episodeIndex].Paths[pathIndex] = filepath.ToSlash(relativePath)
+			}
+		}
 		detail.Seasons = append(detail.Seasons, models.Season{Name: name, Episodes: eps})
 	}
 
@@ -96,7 +116,7 @@ func (s *Server) GetShow(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	detail, err := buildShowDetail(s.DB, id)
+	detail, err := buildShowDetail(s.DB, s.env.TvDir, id)
 	if err != nil {
 		s.internalError(w, "failed to build show detail", err, "id", id)
 		return
@@ -125,9 +145,10 @@ func (s *Server) GetPoster(w http.ResponseWriter, r *http.Request) {
 		http.NotFound(w, r)
 		return
 	}
-	showPath = filepath.FromSlash(showPath)
+	showPath = filepath.ToSlash(showPath)
 
-	show, err := s.DB.GetShowByPath(showPath)
+	relativeShowPath := filepath.Clean(showPath)
+	show, err := s.DB.GetShowByPath(filepath.ToSlash(relativeShowPath))
 	if err != nil {
 		slog.Error("failed to get show", "path", showPath, "err", err)
 		http.NotFound(w, r)

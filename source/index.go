@@ -68,19 +68,20 @@ func (i *Indexer) IndexShows() error {
 
 func (i *Indexer) IndexShow(path string) (*db.Show, error) {
 	showPath := filepath.Join(i.env.TvDir, path)
+	storedPath := filepath.ToSlash(path)
 	client := http.DefaultClient
 	sources := NewSources(
 		NewTenraiSource(i.env.TenraiBaseURL, client),
 		NewKitsuSource(i.env.KitsuBaseURL, client),
 	)
-	show, err := i.db.GetShowByPath(showPath)
+	show, err := i.db.GetShowByPath(storedPath)
 	if err == nil {
 		return show, nil
 	}
 	detail, err := sources.GetMetadata(filepath.Base(showPath))
 	if err != nil {
 		metadata, _ := json.Marshal(models.Metadata{Title: filepath.Base(showPath)})
-		return i.db.CreateShow(nil, showPath, string(metadata))
+		return i.db.CreateShow(nil, storedPath, string(metadata))
 	}
 	resp, err := client.Get(detail.Image)
 	if err != nil {
@@ -95,7 +96,7 @@ func (i *Indexer) IndexShow(path string) (*db.Show, error) {
 	if err != nil {
 		return nil, err
 	}
-	show, err = i.db.CreateShow(poster, showPath, string(metadata))
+	show, err = i.db.CreateShow(poster, storedPath, string(metadata))
 	if err != nil {
 		return nil, err
 	}
